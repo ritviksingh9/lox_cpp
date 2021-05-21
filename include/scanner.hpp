@@ -1,3 +1,6 @@
+#include <vector>
+#include <map>
+
 #include "token.hpp"
 
 class Scanner {
@@ -5,9 +8,9 @@ private:
 	int start;
 	int current;
 	int line;
-	final std::string source;
+	std::string source;
 	std::vector<Token> tokens;
-	static final std::map<std::string, TokenType>	
+	static std::map<std::string, TokenType>	keywords;
 
 	void scanToken();
 	void identifier();
