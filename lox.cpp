@@ -1,6 +1,9 @@
 #include <iostream>
+#include <string>
 
 #include "lox.hpp"
+//#include "scanner.hpp"
+#include "token.hpp"
 
 void lox::runPrompt() { 
 	std::string line;
@@ -11,6 +14,10 @@ void lox::runPrompt() {
 		if(line.compare("exit();") == 0) break;
 		lox::run(line);
 	}
+//	Scanner sc("awasd");
+//	sc.scanTokens();
+	Token <const char *> tok(TokenType::LEFT_PAREN, "hello!", "hello!", 3);
+	std::cout << "\n" << tok.lexeme << "\n";
 }
 
 void lox::runFile(char* path) {
@@ -18,7 +25,7 @@ void lox::runFile(char* path) {
 }
 
 void lox::run(const std::string& source) {
-	std::cout <<"Your input: " << source;
+	
 }
 
 int main(int argc, char* argv[]) {
