@@ -16,14 +16,33 @@ enum TokenType {
 	ENDOFFILE
 };
 
-template <class T>
+
 class Token {
 public:
 	const TokenType type;
-	const  std::string lexeme;
-	const T literal;	
-	const  int line;
+	const std::string lexeme;
+	const int line;
 	
-	Token(TokenType type, std::string lexeme, T literal, int line) : type(type), lexeme(lexeme), literal(literal), line(line) {}
-	//currently the toString method hasn't been implemented... need to figure out clean way of printing out enums
+	Token(TokenType type, const std::string& lexeme, int line) : type(type), lexeme(lexeme), line(line) {}
+	
+	//Destructor
+	~Token() = default;
+};
+
+//NOTE: All these classes are just various definitions of the Token base class
+//A template was not used because there are only three different types for the literal
+//and it makes it easier to use in std::vector
+class TokenNum: public Token {
+public:
+	const double literal;
+	TokenNum(TokenType type, const std::string& lexeme, double literal, int line) : Token(type, lexeme, line), literal(literal) {}
+};
+class TokenStr: public Token {
+public:
+	const std::string& literal;
+	TokenStr(TokenType type, const std::string& lexeme, const std::string& literal, int line) : Token(type, lexeme, line), literal(literal) {}
+};
+class TokenNull: public Token {
+public:
+	TokenNull(TokenType type, const std::string& lexeme, int line) : Token(type, lexeme, line) {}
 };

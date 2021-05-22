@@ -9,8 +9,8 @@ private:
 	int current;
 	int line;
 	std::string source;
-	std::vector<Token> tokens;
-	static std::map<std::string, TokenType>	keywords;
+	std::vector<Token*> tokens;
+	static const std::map<std::string, TokenType> keywords;
 
 	void scanToken();
 	void identifier();
@@ -26,10 +26,11 @@ private:
 	char advance();
 	void addToken(TokenType type);
 	template<typename T>
-	void addToken(TokenType type, T literal) {}
+	void addToken(TokenType type, T literal);
 
+	static std::map<std::string, TokenType> initMap();
 
 public:
-	Scanner(std::string source);
+	Scanner(const std::string& source);
 	std::vector<Token> scanTokens();
 };

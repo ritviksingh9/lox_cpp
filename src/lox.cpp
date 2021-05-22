@@ -16,7 +16,7 @@ void lox::runPrompt() {
 	}
 //	Scanner sc("awasd");
 //	sc.scanTokens();
-	Token <const char *> tok(TokenType::LEFT_PAREN, "hello!", "hello!", 3);
+	TokenStr tok(TokenType::LEFT_PAREN, "hello!", "hello!", 3);
 	std::cout << "\n" << tok.lexeme << "\n";
 }
 
