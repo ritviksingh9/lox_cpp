@@ -1,3 +1,5 @@
+#Credit to https://stackoverflow.com/a/30602701
+
 workdir:=$(shell pwd)
 
 INCLUDE := -I$(workdir)/include
