@@ -27,6 +27,22 @@ Scanner::Scanner(const std::string& source) : source(source) {}
 
 const std::map<std::string, TokenType> Scanner::keywords = Scanner::initMap();
 
+std::vector<std::shared_ptr<TokenBase>> Scanner::scanTokens() {
+/*
+	while(!isAtEnd()) {
+		start = current;
+		scanToken();
+	}*/
+	TokenImpl <void *>* endToken = new TokenImpl<void *> (TokenType::ENDOFFILE,
+								"",
+								line,
+								NULL);
+	tokens.push_back(std::shared_ptr<TokenBase>(endToken));
+	return tokens;
+}
+
+bool Scanner::isAtEnd() {return true;}
+
 char Scanner::advance() {
 	return 'a';
 } 

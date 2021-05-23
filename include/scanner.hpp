@@ -1,5 +1,6 @@
 #include <vector>
 #include <map>
+#include <memory>
 
 #include "token.hpp"
 
@@ -9,7 +10,8 @@ private:
 	int current;
 	int line;
 	std::string source;
-	std::vector<Token*> tokens;
+	//std::vector<Token*> tokens;
+	std::vector<std::shared_ptr<TokenBase>> tokens;
 	static const std::map<std::string, TokenType> keywords;
 
 	void scanToken();
@@ -32,5 +34,5 @@ private:
 
 public:
 	Scanner(const std::string& source);
-	std::vector<Token> scanTokens();
+	std::vector<std::shared_ptr<TokenBase>> scanTokens();
 };

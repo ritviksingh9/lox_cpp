@@ -16,7 +16,7 @@ enum TokenType {
 	ENDOFFILE
 };
 
-
+/*
 class Token {
 public:
 	const TokenType type;
@@ -27,8 +27,29 @@ public:
 	
 	//Destructor
 	~Token() = default;
+};*/
+
+class TokenBase{
+public:
+	const TokenType type;
+	const std::string lexeme;
+	const int line;
+
+	TokenBase(TokenType type, const std::string&lexeme, int line) : type(type),
+									lexeme(lexeme),
+									line(line) {}
+	virtual ~TokenBase()=default;
 };
 
+template <class T>
+class TokenImpl: public TokenBase {
+public:
+	T literal;
+	TokenImpl(TokenType type, const std::string& lexeme, int line, T literal) : 
+	TokenBase(type, lexeme, line), literal(literal) {}
+};
+
+/*
 //NOTE: All these classes are just various definitions of the Token base class
 //A template was not used because there are only three different types for the literal
 //and it makes it easier to use in std::vector
@@ -45,4 +66,4 @@ public:
 class TokenNull: public Token {
 public:
 	TokenNull(TokenType type, const std::string& lexeme, int line) : Token(type, lexeme, line) {}
-};
+};*/
