@@ -1,3 +1,6 @@
+#ifndef SCANNER_H
+#define SCANNER_H
+
 #include <vector>
 #include <map>
 #include <memory>
@@ -36,3 +39,5 @@ public:
 	Scanner(const std::string& source);
 	std::vector<std::shared_ptr<TokenBase>> scanTokens();
 };
+
+#endif

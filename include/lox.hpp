@@ -1,3 +1,6 @@
+#ifndef LOX_H
+#define LOX_H
+
 //#include <string>
 
 namespace lox {
@@ -5,3 +8,5 @@ namespace lox {
 	void runPrompt();
 	void run(const std::string& source);
 }
+
+#endif

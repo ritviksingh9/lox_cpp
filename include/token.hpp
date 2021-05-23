@@ -1,3 +1,6 @@
+#ifndef TOKEN_H
+#define TOKEN_H
+
 #include <string>
 
 enum TokenType {
@@ -67,3 +70,5 @@ class TokenNull: public Token {
 public:
 	TokenNull(TokenType type, const std::string& lexeme, int line) : Token(type, lexeme, line) {}
 };*/
+
+#endif
