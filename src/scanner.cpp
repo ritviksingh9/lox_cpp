@@ -1,3 +1,5 @@
+#include <cctype>
+
 #include "scanner.hpp"
 
 std::map<std::string, TokenType> Scanner::initMap() {
@@ -23,26 +25,127 @@ std::map<std::string, TokenType> Scanner::initMap() {
 	return m;
 }
 
-Scanner::Scanner(const std::string& source) : source(source) {}
-
-const std::map<std::string, TokenType> Scanner::keywords = Scanner::initMap();
-
-std::vector<std::shared_ptr<TokenBase>> Scanner::scanTokens() {
-/*
-	while(!isAtEnd()) {
-		start = current;
-		scanToken();
-	}*/
-	TokenImpl <void *>* endToken = new TokenImpl<void *> (TokenType::ENDOFFILE,
-								"",
-								line,
-								NULL);
-	tokens.push_back(std::shared_ptr<TokenBase>(endToken));
-	return tokens;
+Scanner::Scanner(const std::string& source) : source_(source) {
+	start_ = 0;
+	current_ = 0;
+	line_ = 1;
 }
 
-bool Scanner::isAtEnd() {return true;}
+const std::map<std::string, TokenType> Scanner::keywords_ = Scanner::initMap();
 
-char Scanner::advance() {
-	return 'a';
-} 
+std::vector<std::shared_ptr<TokenBase>> Scanner::scanTokens() {
+
+	while(!isAtEnd()) {
+		start_ = current_;
+		scanToken();
+	}
+	TokenImpl <void *>* endToken = new TokenImpl<void *> (TokenType::ENDOFFILE,
+								"",
+								line_,
+								NULL);
+	tokens_.push_back(std::shared_ptr<TokenBase>(endToken));
+	return tokens_;
+}
+bool Scanner::isAtEnd() {return current_ >= source_.length();}
+
+void Scanner::scanToken() {
+	char c = advance();
+	switch(c) {
+		case '(': addToken(TokenType::LEFT_PAREN); break;
+		case ')': addToken(TokenType::RIGHT_PAREN); break;
+		case '{': addToken(TokenType::LEFT_BRACE); break;
+		case '}': addToken(TokenType::RIGHT_BRACE); break;
+		case ',': addToken(TokenType::COMMA); break;
+		case '.': addToken(TokenType::DOT); break;
+		case '-': addToken(TokenType::MINUS); break;
+		case '+': addToken(TokenType::PLUS); break;
+		case ';': addToken(TokenType::SEMICOLON); break;
+		case '*': addToken(TokenType::STAR); break; 
+		
+		case '!': addToken(match('=') ? TokenType::BANG_EQUAL : 
+						TokenType::BANG); break;
+		case '=': addToken(match('=') ? TokenType::EQUAL_EQUAL : 
+						TokenType::EQUAL); break;
+		case '<': addToken(match('=') ? TokenType::LESS_EQUAL : 
+						TokenType::BANG); break;
+		case '>': addToken(match('=') ? TokenType::GREATER_EQUAL : 
+						TokenType::BANG); break;
+		case '/':
+			if(match('/')) //ignore comments
+				while(!isAtEnd() && peek() != '\n')  advance();
+			else addToken(TokenType::SLASH);	
+	
+		case ' ': break;
+		case '\r': break;
+		case '\t': break;
+		case '\n': line_++; break;
+		
+		case '"': string(); break;
+
+		default:
+			if(isdigit(c)) 
+				number();
+			else if(isalpha(c))
+				identifier();
+			//else implement functionality for throwing error
+	}
+}
+char Scanner::advance() {return source_.at(current_++);} 
+void Scanner::addToken(TokenType type) {
+	void *nullType = 0;
+	addToken(type, nullType);
+}
+bool Scanner::match(char expected) {
+	if(isAtEnd()) return false;
+	else if(source_[current_] != expected) return false;
+
+	current_++;
+	return true;
+}
+char Scanner::peek() {return source_.at(current_+1);}
+char Scanner::peekNext() {
+	if(current_+1 >= source_.length()) return '\0';
+	return source_[current_+1];
+}
+void Scanner::string() {
+	while(!isAtEnd() && peek() != '"') {
+		if(peek() == '\n') 
+			line_++;
+		advance();
+	}
+	
+	//implement functionality for throwing error
+	//if(isAtEnd())
+
+	advance();
+	//only consider the values inside the quotation marks
+	addToken(TokenType::STRING, source_.substr(start_+1, current_-start_-1));
+}
+void Scanner::number() {
+	for(; isdigit(source_[current_]); advance());
+
+	if(source_[current_] == '.' && isdigit(peekNext())) {
+		advance();
+		
+		for(; isdigit(source_[current_]); advance());
+	}
+
+	addToken(TokenType::NUMBER, std::stod(source_.substr(start_, current_-start_+1)));
+}
+//bool isDigit(char c) {return 
+void Scanner::identifier() {
+	for(;isAlphaNumeric(peek()); advance());
+	
+	TokenType type = TokenType::IDENTIFIER;
+	auto iterator = keywords_.find(source_.substr(start_, current_-start_+1));
+	if(iterator != keywords_.end())
+		type = iterator -> second;
+	
+	addToken(type);
+}
+bool Scanner::isAlphaNumeric(char c) {
+	return isAlpha(c) || isdigit(c);
+}
+bool Scanner::isAlpha(char c) {
+	return isalpha(c) || c == '_';
+}

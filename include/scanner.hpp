@@ -9,13 +9,13 @@
 
 class Scanner {
 private:	
-	int start;
-	int current;
-	int line;
-	std::string source;
+	int start_; //points to the first character in the lexeme being parsed
+	int current_; //points at the character currently being considered
+	int line_; //tracks what source line current is on 
+	std::string source_;
 	//std::vector<Token*> tokens;
-	std::vector<std::shared_ptr<TokenBase>> tokens;
-	static const std::map<std::string, TokenType> keywords;
+	std::vector<std::shared_ptr<TokenBase>> tokens_;
+	static const std::map<std::string, TokenType> keywords_;
 
 	void scanToken();
 	void identifier();
@@ -31,7 +31,11 @@ private:
 	char advance();
 	void addToken(TokenType type);
 	template<typename T>
-	void addToken(TokenType type, T literal);
+	void addToken(TokenType type, T literal) {
+		std::string lexeme = source_.substr(start_, current_-start_+1);
+		TokenImpl <T>* tok = new TokenImpl <T> (type, lexeme, line_, literal);
+		tokens_.push_back(std::shared_ptr<TokenBase>(tok));
+	}
 
 	static std::map<std::string, TokenType> initMap();
 
