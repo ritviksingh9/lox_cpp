@@ -16,7 +16,6 @@ void lox::runPrompt() {
 	}
 	Scanner sc("if(var == True) for \"awdawdwadawdawd\" 3.123");
 	sc.scanTokens();
-	std::cout << "AWFWAAWIFHWAEIOFHWIOAFJWIOAH\n";
 	auto tokens = sc.scanTokens();
 	for(auto tok: tokens) {
 		if(tok->type == TokenType::STRING) {
