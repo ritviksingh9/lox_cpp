@@ -1,3 +1,4 @@
+#include <iostream>
 #include <cctype>
 
 #include "scanner.hpp"
@@ -89,6 +90,7 @@ void Scanner::scanToken() {
 				identifier();
 			//else implement functionality for throwing error
 	}
+	std::cout << "CURRENT: " << current_ << std::endl;
 }
 char Scanner::advance() {return source_.at(current_++);} 
 void Scanner::addToken(TokenType type) {
@@ -102,7 +104,7 @@ bool Scanner::match(char expected) {
 	current_++;
 	return true;
 }
-char Scanner::peek() {return source_.at(current_+1);}
+char Scanner::peek() {return source_.at(current_);}
 char Scanner::peekNext() {
 	if(current_+1 >= source_.length()) return '\0';
 	return source_[current_+1];
@@ -119,25 +121,25 @@ void Scanner::string() {
 
 	advance();
 	//only consider the values inside the quotation marks
-	addToken(TokenType::STRING, source_.substr(start_+1, current_-start_-1));
+	addToken(TokenType::STRING, source_.substr(start_+1, current_-start_-2));
 }
 void Scanner::number() {
-	for(; isdigit(source_[current_]); advance());
+	for(; !isAtEnd() && isdigit(source_[current_]); advance());
 
-	if(source_[current_] == '.' && isdigit(peekNext())) {
+	if(!isAtEnd() && source_[current_] == '.' && isdigit(peekNext())) {
 		advance();
 		
-		for(; isdigit(source_[current_]); advance());
+		for(; !isAtEnd() && isdigit(source_[current_]); advance());
 	}
 
-	addToken(TokenType::NUMBER, std::stod(source_.substr(start_, current_-start_+1)));
+	addToken(TokenType::NUMBER, std::stod(source_.substr(start_, current_-start_)));
 }
 //bool isDigit(char c) {return 
 void Scanner::identifier() {
 	for(;isAlphaNumeric(peek()); advance());
 	
 	TokenType type = TokenType::IDENTIFIER;
-	auto iterator = keywords_.find(source_.substr(start_, current_-start_+1));
+	auto iterator = keywords_.find(source_.substr(start_, current_-start_));
 	if(iterator != keywords_.end())
 		type = iterator -> second;
 	
