@@ -1,4 +1,3 @@
-#include <iostream>
 #include <cctype>
 
 #include "scanner.hpp"
@@ -45,6 +44,7 @@ std::vector<std::shared_ptr<TokenBase>> Scanner::scanTokens() {
 								line_,
 								NULL);
 	tokens_.push_back(std::shared_ptr<TokenBase>(endToken));
+
 	return tokens_;
 }
 bool Scanner::isAtEnd() {return current_ >= source_.length();}
@@ -90,7 +90,6 @@ void Scanner::scanToken() {
 				identifier();
 			//else implement functionality for throwing error
 	}
-	std::cout << "CURRENT: " << current_ << std::endl;
 }
 char Scanner::advance() {return source_.at(current_++);} 
 void Scanner::addToken(TokenType type) {
@@ -131,7 +130,6 @@ void Scanner::number() {
 		
 		for(; !isAtEnd() && isdigit(source_[current_]); advance());
 	}
-
 	addToken(TokenType::NUMBER, std::stod(source_.substr(start_, current_-start_)));
 }
 //bool isDigit(char c) {return 

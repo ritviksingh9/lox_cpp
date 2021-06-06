@@ -15,7 +15,6 @@ void lox::runPrompt() {
 		lox::run(line);
 	}
 	Scanner sc("if(var == True) for \"awdawdwadawdawd\" 3.123");
-	sc.scanTokens();
 	auto tokens = sc.scanTokens();
 	for(auto tok: tokens) {
 		if(tok->type == TokenType::STRING) {
