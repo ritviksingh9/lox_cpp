@@ -52,6 +52,27 @@ public:
 	TokenBase(type, lexeme, line), literal(literal) {}
 };
 
+class Token {
+public:
+	const TokenType type;
+	const std::string lexeme;
+	const int line;
+
+	Token(TokenType type, const std::string& lexeme, int line) : type(type),
+								     lexeme(lexeme),
+								     line(line) {};
+	template <class T>
+	void getLiteral(T& literal) {
+		if(type == TokenType::STRING) {	
+			//trimming away the quotation marks
+			literal = lexeme.substr(1, lexeme.length()-2);
+		}
+		else if(type == TokenType::NUMBER) {
+			//converting string to double
+			literal = std::stod(lexeme);
+		}
+	}
+};
 /*
 //NOTE: All these classes are just various definitions of the Token base class
 //A template was not used because there are only three different types for the literal

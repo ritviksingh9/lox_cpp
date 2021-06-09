@@ -9,10 +9,10 @@ def main(args):
 	if(len(args) != 2):
 		print("Usage: python generateAST <output directory>")
 	else:
-		types = {"Binary" : "Expr* left, TokenImpl<T> op, Expr* right",
-			 "Grouping" : "Expr* expression",
+		types = {"Binary" : "std::shared_ptr<Expr> left, Token op, std::shared_ptr<Expr> right",
+			 "Grouping" : "std::shared_ptr<Expr> expression",
 			 "Literal" : "T value",
-			 "Unary": "TokenImpl<T> op, Expr* right"}
+			 "Unary": "Token op, std::shared_ptr<Expr> right"}
 		
 		out_dir = args[1]
 		base_name = "Expr"
@@ -25,7 +25,8 @@ def defineAST(out_dir, base_name, types):
 	f.write("#ifndef "+base_name.upper()+"_H\n")
 	f.write("#define "+base_name.upper()+"_H\n\n")
 
-	f.write("#include <vector>\n\n")
+	f.write("#include <vector>\n")
+	f.write("#include <memory>\n\n")
 	f.write("#include \"token.hpp\"\n\n")
 
 	'''

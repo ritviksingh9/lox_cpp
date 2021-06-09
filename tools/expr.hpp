@@ -2,6 +2,7 @@
 #define EXPR_H
 
 #include <vector>
+#include <memory>
 
 #include "token.hpp"
 
@@ -12,16 +13,15 @@ public:
 	virtual std::string getString() const = 0;
 };
 
-template <class T>
 class Binary: public Expr {
 public:
-	Expr* left;
-	TokenImpl<T> op;
-	Expr* right;
+	std::shared_ptr<Expr> left;
+	Token op;
+	std::shared_ptr<Expr> right;
 
-	Binary(Expr* left, TokenImpl<T> op, Expr* right) : left(left),
-	                                                   op(op),
-	                                                   right(right) {}
+	Binary(std::shared_ptr<Expr> left, Token op, std::shared_ptr<Expr> right) : left(left),
+	                                                                            op(op),
+	                                                                            right(right) {}
 
 	std::string getString() const override;
 	template <class U>
@@ -29,9 +29,9 @@ public:
 };
 class Grouping: public Expr {
 public:
-	Expr* expression;
+	std::shared_ptr<Expr> expression;
 
-	Grouping(Expr* expression) : expression(expression) {}
+	Grouping(std::shared_ptr<Expr> expression) : expression(expression) {}
 
 	std::string getString() const override;
 	template <class U>
@@ -48,14 +48,13 @@ public:
 	template <class U>
 	U evaluate();
 };
-template <class T>
 class Unary: public Expr {
 public:
-	TokenImpl<T> op;
-	Expr* right;
+	Token op;
+	std::shared_ptr<Expr> right;
 
-	Unary(TokenImpl<T> op, Expr* right) : op(op),
-	                                      right(right) {}
+	Unary(Token op, std::shared_ptr<Expr> right) : op(op),
+	                                               right(right) {}
 
 	std::string getString() const override;
 	template <class U>

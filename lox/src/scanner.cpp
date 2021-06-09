@@ -33,18 +33,13 @@ Scanner::Scanner(const std::string& source) : source_(source) {
 
 const std::map<std::string, TokenType> Scanner::keywords_ = Scanner::initMap();
 
-std::vector<std::shared_ptr<TokenBase>> Scanner::scanTokens() {
+std::vector<Token> Scanner::scanTokens() {
 
 	while(!isAtEnd()) {
 		start_ = current_;
 		scanToken();
 	}
-	TokenImpl <void *>* endToken = new TokenImpl<void *> (TokenType::ENDOFFILE,
-								"",
-								line_,
-								NULL);
-	tokens_.push_back(std::shared_ptr<TokenBase>(endToken));
-
+	tokens_.emplace_back(TokenType::ENDOFFILE, "", line_);
 	return tokens_;
 }
 bool Scanner::isAtEnd() {return current_ >= source_.length();}
@@ -93,8 +88,8 @@ void Scanner::scanToken() {
 }
 char Scanner::advance() {return source_.at(current_++);} 
 void Scanner::addToken(TokenType type) {
-	void *nullType = 0;
-	addToken(type, nullType);
+	std::string lexeme = source_.substr(start_, current_-start_);
+	tokens_.emplace_back(type, lexeme, line_);
 }
 bool Scanner::match(char expected) {
 	if(isAtEnd()) return false;
@@ -120,7 +115,7 @@ void Scanner::string() {
 
 	advance();
 	//only consider the values inside the quotation marks
-	addToken(TokenType::STRING, source_.substr(start_+1, current_-start_-2));
+	addToken(TokenType::STRING);
 }
 void Scanner::number() {
 	for(; !isAtEnd() && isdigit(source_[current_]); advance());
@@ -130,7 +125,7 @@ void Scanner::number() {
 		
 		for(; !isAtEnd() && isdigit(source_[current_]); advance());
 	}
-	addToken(TokenType::NUMBER, std::stod(source_.substr(start_, current_-start_)));
+	addToken(TokenType::NUMBER);
 }
 //bool isDigit(char c) {return 
 void Scanner::identifier() {

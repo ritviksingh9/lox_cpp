@@ -3,7 +3,7 @@
 
 #include "lox.hpp"
 #include "scanner.hpp"
-#include "token.hpp"
+#include "expr.hpp"
 
 void lox::runPrompt() { 
 	std::string line;
@@ -17,27 +17,8 @@ void lox::runPrompt() {
 	Scanner sc("if(var == True) for \"awdawdwadawdawd\" 3.123");
 	auto tokens = sc.scanTokens();
 	for(auto tok: tokens) {
-		if(tok->type == TokenType::STRING) {
-			std::shared_ptr<TokenImpl <std::string>> temp = 
-			std::dynamic_pointer_cast<TokenImpl <std::string>>(tok);
-			std::cout << "Token: " << temp -> lexeme << std::endl;
-		}
-		else if(tok->type == TokenType::NUMBER) {
-			std::shared_ptr<TokenImpl <double>> temp = 
-			std::dynamic_pointer_cast<TokenImpl <double>>(tok);
-			std::cout << "Token: " << temp -> lexeme << std::endl;
-		}
-		else {
-			std::shared_ptr<TokenImpl <void *>> temp = 
-			std::dynamic_pointer_cast<TokenImpl <void *>>(tok);
-			std::cout << "Token: " << temp -> lexeme << std::endl;
-		}
+		std::cout << "Token: " << tok.lexeme << std::endl;
 	}
-		
-//	TokenStr tok(TokenType::LEFT_PAREN, "hello!", "hello!", 3);
-//	std::cout << "\n" << tok.lexeme << "\n";
-//	TokenImpl <std::string> tok2(TokenType::LEFT_PAREN, "hello!", 3, "hello!");
-//	std::cout << "\n" << tok2.lexeme << "\n";
 }
 
 void lox::runFile(char* path) {
@@ -49,6 +30,18 @@ void lox::run(const std::string& source) {
 }
 
 int main(int argc, char* argv[]) {
+	Token tok1(TokenType::MINUS, "-", 1);
+	Token tok2(TokenType::STAR, "*", 1);
+	
+	Literal <double>* lit1 = new Literal <double> (45.67);
+	Literal <double>* lit2 = new Literal <double> (123);
+
+	Grouping* group = new Grouping(std::shared_ptr<Expr>(lit1));
+	Unary* unary = new Unary (tok1, std::shared_ptr<Expr>(lit2));
+
+	Binary binary(std::shared_ptr<Expr>(unary), tok2, std::shared_ptr<Expr>(group));
+	std::cout << binary.getString() << std::endl;
+	
 	if(argc == 1) {
 		lox::runPrompt();	
 	}
