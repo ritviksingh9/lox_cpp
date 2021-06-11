@@ -19,77 +19,17 @@ enum TokenType {
 	ENDOFFILE
 };
 
-/*
-class Token {
-public:
-	const TokenType type;
-	const std::string lexeme;
-	const int line;
-	
-	Token(TokenType type, const std::string& lexeme, int line) : type(type), lexeme(lexeme), line(line) {}
-	
-	//Destructor
-	~Token() = default;
-};*/
-
-class TokenBase{
-public:
-	const TokenType type;
-	const std::string lexeme;
-	const int line;
-
-	TokenBase(TokenType type, const std::string&lexeme, int line) : type(type),
-									lexeme(lexeme),
-									line(line) {}
-	virtual ~TokenBase()=default;
-};
-
-template <class T>
-class TokenImpl: public TokenBase {
-public:
-	T literal;
-	TokenImpl(TokenType type, const std::string& lexeme, int line, T literal) : 
-	TokenBase(type, lexeme, line), literal(literal) {}
-};
-
 class Token {
 public:
 	const TokenType type;
 	const std::string lexeme;
 	const int line;
 
-	Token(TokenType type, const std::string& lexeme, int line) : type(type),
-								     lexeme(lexeme),
-								     line(line) {};
-	template <class T>
-	void getLiteral(T& literal) {
-		if(type == TokenType::STRING) {	
-			//trimming away the quotation marks
-			literal = lexeme.substr(1, lexeme.length()-2);
-		}
-		else if(type == TokenType::NUMBER) {
-			//converting string to double
-			literal = std::stod(lexeme);
-		}
-	}
+	Token(TokenType type, const std::string& lexeme, int line);
+
+	double getNumLiteral();
+	std::string getStringLiteral();
+	
 };
-/*
-//NOTE: All these classes are just various definitions of the Token base class
-//A template was not used because there are only three different types for the literal
-//and it makes it easier to use in std::vector
-class TokenNum: public Token {
-public:
-	const double literal;
-	TokenNum(TokenType type, const std::string& lexeme, double literal, int line) : Token(type, lexeme, line), literal(literal) {}
-};
-class TokenStr: public Token {
-public:
-	const std::string& literal;
-	TokenStr(TokenType type, const std::string& lexeme, const std::string& literal, int line) : Token(type, lexeme, line), literal(literal) {}
-};
-class TokenNull: public Token {
-public:
-	TokenNull(TokenType type, const std::string& lexeme, int line) : Token(type, lexeme, line) {}
-};*/
 
 #endif

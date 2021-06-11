@@ -1,4 +1,5 @@
 #include "expr.hpp"
+
 std::string parenthesize(const std::string& str,
 			 	const std::vector<std::shared_ptr<Expr>>& expressions) {
 	std::string strRep = "(";

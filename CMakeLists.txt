@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.10)
 project(lox_interpreter)
 
+#minimum C++ version
+set(CMAKE_CXX_STANDARD 11)
+
 #include header files
 include_directories(lox/include)
 

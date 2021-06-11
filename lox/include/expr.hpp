@@ -6,7 +6,6 @@
 
 #include "token.hpp"
 
-
 class Expr{
 public:
 	virtual ~Expr() {}

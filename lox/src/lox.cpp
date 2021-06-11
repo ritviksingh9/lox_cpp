@@ -1,9 +1,8 @@
 #include <iostream>
-#include <string>
 
 #include "lox.hpp"
 #include "scanner.hpp"
-#include "expr.hpp"
+#include "parser.hpp"
 
 void lox::runPrompt() { 
 	std::string line;
@@ -30,18 +29,14 @@ void lox::run(const std::string& source) {
 }
 
 int main(int argc, char* argv[]) {
-	Token tok1(TokenType::MINUS, "-", 1);
-	Token tok2(TokenType::STAR, "*", 1);
-	
-	Literal <double>* lit1 = new Literal <double> (45.67);
-	Literal <double>* lit2 = new Literal <double> (123);
+	std::string str = "-123 * 45.67";
 
-	Grouping* group = new Grouping(std::shared_ptr<Expr>(lit1));
-	Unary* unary = new Unary (tok1, std::shared_ptr<Expr>(lit2));
+	Scanner sc(str);
+	auto tokens = sc.scanTokens();
+	Parser parser(tokens);
+	std::shared_ptr<Expr> expr = parser.parse();
+	std::cout << expr -> getString() << std::endl;
 
-	Binary binary(std::shared_ptr<Expr>(unary), tok2, std::shared_ptr<Expr>(group));
-	std::cout << binary.getString() << std::endl;
-	
 	if(argc == 1) {
 		lox::runPrompt();	
 	}
