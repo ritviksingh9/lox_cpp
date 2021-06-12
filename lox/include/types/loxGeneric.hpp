@@ -4,7 +4,7 @@
 #include <memory>
 #include <string>
 
-enum GenericType {BOOL, NUM, STRING};
+enum class GenericType {BOOL, NUM, STRING};
 
 struct LoxGeneric {
 	GenericType type;
