@@ -1,4 +1,4 @@
-#include "expr.hpp"
+#include "types/expression/expr.hpp"
 
 std::string parenthesize(const std::string& str,
 			 	const std::vector<std::shared_ptr<Expr>>& expressions) {
@@ -24,4 +24,13 @@ std::string Grouping::getString() const {
 std::string Unary::getString() const {
 	std::vector<std::shared_ptr<Expr>> expressions = {right};
 	return parenthesize(op.lexeme, expressions);
+}
+std::string Literal::getString() const {
+	if(value.type == LiteralType::NUM) 
+		return std::to_string(value.numValue);
+	else if(value.type == LiteralType::STRING)
+		return value.strValue;
+	else
+		return "nil";
+	
 }

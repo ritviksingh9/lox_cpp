@@ -1,8 +1,8 @@
 #include <iostream>
 
-#include "lox.hpp"
-#include "scanner.hpp"
-#include "parser.hpp"
+#include "lox/lox.hpp"
+#include "scanner/scanner.hpp"
+#include "parser/parser.hpp"
 
 void lox::runPrompt() { 
 	std::string line;

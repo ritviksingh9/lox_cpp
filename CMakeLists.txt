@@ -8,5 +8,5 @@ set(CMAKE_CXX_STANDARD 11)
 include_directories(lox/include)
 
 #define source files
-file(GLOB LOX_SRC ${CMAKE_CURRENT_LIST_DIR}/lox/src/*.cpp)
+file(GLOB_RECURSE LOX_SRC ${CMAKE_CURRENT_LIST_DIR}/lox/src/*.cpp)
 add_executable(lox ${LOX_SRC})

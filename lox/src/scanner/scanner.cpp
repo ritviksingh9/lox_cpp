@@ -1,7 +1,7 @@
 #include <cctype>
 
-#include "scanner.hpp"
-#include <iostream>
+#include "scanner/scanner.hpp"
+
 std::map<std::string, TokenType> Scanner::initMap() {
 	std::map<std::string, TokenType> m;
 

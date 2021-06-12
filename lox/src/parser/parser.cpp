@@ -1,4 +1,4 @@
-#include "parser.hpp"
+#include "parser/parser.hpp"
 
 Parser::Parser(const std::vector<Token>& sourceTokens) : tokens_(sourceTokens) {
 	current_ = 0;
@@ -28,28 +28,28 @@ std::shared_ptr<Expr> Parser::primary() {
 	std::vector <TokenType> keyTypes = {TokenType::STRING, TokenType::NUMBER};
 	if(check(TokenType::FALSE)) {
 		advance();
-		return std::shared_ptr<Expr>(new Literal <bool> (false));
+		return std::shared_ptr<Expr>(new Literal(false));
 	}
 	else if(check(TokenType::TRUE)) {
 		advance();
-		return std::shared_ptr<Expr>(new Literal <bool> (true));
+		return std::shared_ptr<Expr>(new Literal(true));
 	}
 	else if(check(TokenType::NIL)) {
 		advance();
-		return std::shared_ptr<Expr>(new Literal <void*> (NULL));
+		return std::shared_ptr<Expr>(new Literal());
 	}
 	else if(match(keyTypes)) {
 		Token tok = tokens_[current_-1];
 		if(tok.type == TokenType::NUMBER) {
 			double literal = tok.getNumLiteral();
-			return std::shared_ptr<Expr> (new Literal <double> (literal));
+			return std::shared_ptr<Expr> (new Literal(literal));
 		}
 		else if(tok.type == TokenType::STRING) {
 			std::string literal = tok.getStringLiteral();
-			return std::shared_ptr<Expr> (new Literal <std::string> (literal));
+			return std::shared_ptr<Expr> (new Literal(literal));
 		}
 		else {
-			return std::shared_ptr<Expr> (new Literal <void*> (NULL));
+			return std::shared_ptr<Expr> (new Literal());
 		}
 	}
 	else {

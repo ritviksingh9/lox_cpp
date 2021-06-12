@@ -4,7 +4,8 @@
 #include <vector>
 #include <memory>
 
-#include "token.hpp"
+#include "types/token.hpp"
+#include "types/literalGeneric.hpp"
 
 
 class Expr{
@@ -24,8 +25,6 @@ public:
 	                                                                            right(right) {}
 
 	std::string getString() const override;
-	template <class U>
-	U evaluate();
 };
 class Grouping: public Expr {
 public:
@@ -34,19 +33,17 @@ public:
 	Grouping(std::shared_ptr<Expr> expression) : expression(expression) {}
 
 	std::string getString() const override;
-	template <class U>
-	U evaluate();
 };
-template <class T>
 class Literal: public Expr {
 public:
-	T value;
+	LiteralGeneric value;
 
-	Literal(T value) : value(value) {}
+	Literal() {}
+	Literal(bool value) : value(value) {}
+	Literal(double value) : value(value) {}
+	Literal(std::string value) : value(value) {}
 
 	std::string getString() const override;
-	template <class U>
-	U evaluate();
 };
 class Unary: public Expr {
 public:
@@ -57,8 +54,6 @@ public:
 	                                               right(right) {}
 
 	std::string getString() const override;
-	template <class U>
-	U evaluate();
 };
 
 #endif

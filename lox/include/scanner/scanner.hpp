@@ -5,7 +5,7 @@
 #include <map>
 #include <memory>
 
-#include "token.hpp"
+#include "types/token.hpp"
 
 class Scanner {
 private:	

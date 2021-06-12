@@ -1,6 +1,6 @@
 #include <sstream>
 
-#include "expr.hpp"
+#include "types/expression/expr.hpp"
 
 template <class T>
 std::string Literal<T>::getString() const {
