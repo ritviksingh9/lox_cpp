@@ -4,7 +4,7 @@
 #include <memory>
 #include <string>
 
-enum class GenericType {BOOL, NUM, STRING};
+enum class GenericType {BOOL, NUM, STRING, NONE};
 
 struct LoxGeneric {
 	GenericType type;
@@ -13,13 +13,25 @@ struct LoxGeneric {
 	double numValue;
 	std::string strValue;
 	//constructor for different types	
+	LoxGeneric();
 	LoxGeneric(bool val);
 	LoxGeneric(double val);
 	LoxGeneric(std::string val);
-	//getters
-	bool getBool();
-	double getNum();
-	std::string getStr();
+	//whether something is "true"
+	bool getTruthValue();
+	//arithmetic operators
+	friend LoxGeneric operator+(const LoxGeneric& left, const LoxGeneric& right);
+	friend LoxGeneric operator-(const LoxGeneric& left, const LoxGeneric& right);
+	friend LoxGeneric operator*(const LoxGeneric& left, const LoxGeneric& right);
+	friend LoxGeneric operator/(const LoxGeneric& left, const LoxGeneric& right);
+	//comparison operators
+	friend bool operator==(const LoxGeneric& left, const LoxGeneric& right);
+	friend bool operator!=(const LoxGeneric& left, const LoxGeneric& right);
+	friend bool operator>=(const LoxGeneric& left, const LoxGeneric& right);
+	friend bool operator<=(const LoxGeneric& left, const LoxGeneric& right);
+	friend bool operator>(const LoxGeneric& left, const LoxGeneric& right);
+	friend bool operator<(const LoxGeneric& left, const LoxGeneric& right);
+	
 };
 
 #endif

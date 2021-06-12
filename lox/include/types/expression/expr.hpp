@@ -6,12 +6,14 @@
 
 #include "types/token.hpp"
 #include "types/literalGeneric.hpp"
+#include "types/loxGeneric.hpp"
 
 
 class Expr{
 public:
 	virtual ~Expr() {}
 	virtual std::string getString() const = 0;
+	virtual LoxGeneric evaluate() const = 0;
 };
 
 class Binary: public Expr {
@@ -25,6 +27,7 @@ public:
 	                                                                            right(right) {}
 
 	std::string getString() const override;
+	LoxGeneric evaluate() const override;
 };
 class Grouping: public Expr {
 public:
@@ -33,6 +36,7 @@ public:
 	Grouping(std::shared_ptr<Expr> expression) : expression(expression) {}
 
 	std::string getString() const override;
+	LoxGeneric evaluate() const override;
 };
 class Literal: public Expr {
 public:
@@ -44,6 +48,7 @@ public:
 	Literal(std::string value) : value(value) {}
 
 	std::string getString() const override;
+	LoxGeneric evaluate() const override;
 };
 class Unary: public Expr {
 public:
@@ -54,6 +59,7 @@ public:
 	                                               right(right) {}
 
 	std::string getString() const override;
+	LoxGeneric evaluate() const override;
 };
 
 #endif

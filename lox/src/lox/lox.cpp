@@ -29,7 +29,7 @@ void lox::run(const std::string& source) {
 }
 
 int main(int argc, char* argv[]) {
-	std::string str = "-123 * 45.67";
+	std::string str = "-123 * 45.67 + 213123 - 2123";
 
 	Scanner sc(str);
 	auto tokens = sc.scanTokens();
