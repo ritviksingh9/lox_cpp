@@ -1,6 +1,7 @@
 #include <cctype>
 
 #include "scanner/scanner.hpp"
+#include "error/errorReporter.hpp"
 
 std::map<std::string, TokenType> Scanner::initMap() {
 	std::map<std::string, TokenType> m;
@@ -33,18 +34,18 @@ Scanner::Scanner(const std::string& source) : source_(source) {
 
 const std::map<std::string, TokenType> Scanner::keywords_ = Scanner::initMap();
 
-std::vector<Token> Scanner::scanTokens() {
+std::vector<Token> Scanner::scanTokens(bool& successState) {
 
 	while(!isAtEnd()) {
 		start_ = current_;
-		scanToken();
+		scanToken(successState);
 	}
 	tokens_.emplace_back(TokenType::ENDOFFILE, "", line_);
 	return tokens_;
 }
 bool Scanner::isAtEnd() {return current_ >= source_.length();}
 
-void Scanner::scanToken() {
+void Scanner::scanToken(bool& successState) {
 	char c = advance();
 	switch(c) {
 		case '(': addToken(TokenType::LEFT_PAREN); break;
@@ -76,14 +77,17 @@ void Scanner::scanToken() {
 		case '\t': break;
 		case '\n': line_++; break;
 		
-		case '"': string(); break;
+		case '"': successState = successState && string(); break;
 
 		default:
 			if(isdigit(c)) 
 				number();
 			else if(isalpha(c))
 				identifier();
-			//else implement functionality for throwing error
+			else {
+				successState = false;
+				reportError(line_, "Unexpected character.");
+			}
 	}
 }
 char Scanner::advance() {return source_.at(current_++);} 
@@ -103,19 +107,22 @@ char Scanner::peekNext() {
 	if(current_+1 >= source_.length()) return '\0';
 	return source_[current_+1];
 }
-void Scanner::string() {
+bool Scanner::string() {
 	while(!isAtEnd() && peek() != '"') {
 		if(peek() == '\n') 
 			line_++;
 		advance();
 	}
 	
-	//implement functionality for throwing error
-	//if(isAtEnd())
+	if(isAtEnd()) {
+		reportError(line_, "Unterminated string.");
+		return false; //was not successful
+	}
 
 	advance();
 	//only consider the values inside the quotation marks
 	addToken(TokenType::STRING);
+	return true; //return success
 }
 void Scanner::number() {
 	for(; !isAtEnd() && isdigit(source_[current_]); advance());
@@ -127,9 +134,8 @@ void Scanner::number() {
 	}
 	addToken(TokenType::NUMBER);
 }
-//bool isDigit(char c) {return 
 void Scanner::identifier() {
-	for(;isAlphaNumeric(peek()); advance());
+	for(;!isAtEnd() && isAlphaNumeric(peek()); advance());
 	
 	TokenType type = TokenType::IDENTIFIER;
 	auto iterator = keywords_.find(source_.substr(start_, current_-start_));

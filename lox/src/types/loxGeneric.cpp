@@ -43,6 +43,11 @@ LoxGeneric operator*(const LoxGeneric& left, const LoxGeneric& right) {
 		return LoxGeneric(left.numValue*right.numValue);
 	return LoxGeneric();//throw error
 }
+LoxGeneric operator*(const LoxGeneric& expr, double multiplicand) {
+	if(expr.type == GenericType::NUM)
+		return LoxGeneric(expr.numValue*multiplicand);
+	return LoxGeneric();//throw error
+}
 LoxGeneric operator/(const LoxGeneric& left, const LoxGeneric& right) {
 	if(left.type == GenericType::NUM && right.type == GenericType::NUM)
 		return LoxGeneric(left.numValue/right.numValue);
@@ -70,19 +75,19 @@ bool operator!=(const LoxGeneric& left, const LoxGeneric& right) {
 bool operator>=(const LoxGeneric& left, const LoxGeneric& right) {
 	if(left.type == GenericType::NUM && right.type == GenericType::NUM)
 		return left.numValue >= right.numValue;
-	return false;
+	return false; //throw error
 }
 bool operator<=(const LoxGeneric& left, const LoxGeneric& right) {
 	if(left.type == GenericType::NUM && right.type == GenericType::NUM)
 		return left.numValue <= right.numValue;
-	return false;
+	return false; //throw error
 }
 bool operator>(const LoxGeneric& left, const LoxGeneric& right) {
 		return left.numValue > right.numValue;
-	return false;
+	return false; //throw error
 }
 bool operator<(const LoxGeneric& left, const LoxGeneric& right) {
 	if(left.type == GenericType::NUM && right.type == GenericType::NUM)
 		return left.numValue < right.numValue;
-	return false;
+	return false; //throw error
 }

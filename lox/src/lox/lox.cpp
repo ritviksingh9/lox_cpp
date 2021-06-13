@@ -13,11 +13,13 @@ void lox::runPrompt() {
 		if(line.compare("exit();") == 0) break;
 		lox::run(line);
 	}
-	Scanner sc("if(var == True) for \"awdawdwadawdawd\" 3.123");
-	auto tokens = sc.scanTokens();
+	bool successState = true;
+	Scanner sc("if(var == True) for \"awdawdwadawdawd\" 3.123 #######!QWE");
+	auto tokens = sc.scanTokens(successState);
 	for(auto tok: tokens) {
 		std::cout << "Token: " << tok.lexeme << std::endl;
 	}
+	std::cout << "SUCCESS: " << successState << std::endl;
 }
 
 void lox::runFile(char* path) {
@@ -29,14 +31,15 @@ void lox::run(const std::string& source) {
 }
 
 int main(int argc, char* argv[]) {
-	std::string str = "-123 * 45.67 + 213123 - 2123";
-
+	std::string str = "-123 * 45.67";
+	bool successState = true;
 	Scanner sc(str);
-	auto tokens = sc.scanTokens();
+	auto tokens = sc.scanTokens(successState);
 	Parser parser(tokens);
 	std::shared_ptr<Expr> expr = parser.parse();
+	LoxGeneric eval = expr -> evaluate();
 	std::cout << expr -> getString() << std::endl;
-
+	std::cout << eval.numValue << std::endl;
 	if(argc == 1) {
 		lox::runPrompt();	
 	}

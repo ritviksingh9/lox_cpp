@@ -23,6 +23,7 @@ struct LoxGeneric {
 	friend LoxGeneric operator+(const LoxGeneric& left, const LoxGeneric& right);
 	friend LoxGeneric operator-(const LoxGeneric& left, const LoxGeneric& right);
 	friend LoxGeneric operator*(const LoxGeneric& left, const LoxGeneric& right);
+	friend LoxGeneric operator*(const LoxGeneric& expr, double multiplicand);
 	friend LoxGeneric operator/(const LoxGeneric& left, const LoxGeneric& right);
 	//comparison operators
 	friend bool operator==(const LoxGeneric& left, const LoxGeneric& right);
