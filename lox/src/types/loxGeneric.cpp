@@ -54,8 +54,14 @@ LoxGeneric operator*(const LoxGeneric& expr, double multiplicand) {
 	return LoxGeneric();
 }
 LoxGeneric operator/(const LoxGeneric& left, const LoxGeneric& right) {
-	if(left.type == GenericType::NUM && right.type == GenericType::NUM)
-		return LoxGeneric(left.numValue/right.numValue);
+	if(left.type == GenericType::NUM && right.type == GenericType::NUM) {
+		if(right.numValue == 0.d)	{
+			runtimeError::reportRuntimeError("Cannot divide by 0.");
+			return LoxGeneric();
+		}
+		else
+			return LoxGeneric(left.numValue/right.numValue);
+	}
 	runtimeError::reportRuntimeError("Operands must of num type.");
 	return LoxGeneric();//throw error
 }
