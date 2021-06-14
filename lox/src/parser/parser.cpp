@@ -1,5 +1,5 @@
 #include "parser/parser.hpp"
-#include "error/errorReporter.hpp"
+#include "error/staticErrorHandler.hpp"
 
 Parser::Parser(const std::vector<Token>& sourceTokens) : tokens_(sourceTokens) {
 	current_ = 0;
@@ -120,7 +120,7 @@ std::shared_ptr<Expr> Parser::parse() {
 
 Token Parser::consume(TokenType type, const std::string& message) {
 	if(check(type)) return advance();
-	reportParserError(tokens_[current_], message);
+	staticError::reportParserError(tokens_[current_], message);
 	successState_ = false;
 }
 void Parser::synchronize() {

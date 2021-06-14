@@ -3,8 +3,16 @@
 
 #include <memory>
 #include <string>
+#include <map>
 
 enum class GenericType {BOOL, NUM, STRING, NONE};
+
+const std::map<GenericType, std::string> genericToString = {
+	{GenericType::BOOL, "bool"},
+	{GenericType::NUM, "num"},
+	{GenericType::STRING, "string"},
+	{GenericType::NONE, "nil"}
+};
 
 struct LoxGeneric {
 	GenericType type;

@@ -1,4 +1,5 @@
 #include "types/loxGeneric.hpp"
+#include "error/runtimeErrorHandler.hpp"
 
 //constructor
 LoxGeneric::LoxGeneric() : type{GenericType::NONE},
@@ -31,26 +32,31 @@ LoxGeneric operator+(const LoxGeneric& left, const LoxGeneric& right) {
 		return LoxGeneric(left.numValue+right.numValue);
 	else if(left.type == GenericType::STRING && right.type == GenericType::STRING)
 		return LoxGeneric(left.strValue+right.strValue);
+	runtimeError::reportRuntimeError("Operands must be either of num or string type.");
 	return LoxGeneric();//throw error
 }
 LoxGeneric operator-(const LoxGeneric& left, const LoxGeneric& right) {
 	if(left.type == GenericType::NUM && right.type == GenericType::NUM)
 		return LoxGeneric(left.numValue-right.numValue);
+	runtimeError::reportRuntimeError("Operands must of num type.");
 	return LoxGeneric();//throw error
 }
 LoxGeneric operator*(const LoxGeneric& left, const LoxGeneric& right) {
 	if(left.type == GenericType::NUM && right.type == GenericType::NUM)
-		return LoxGeneric(left.numValue*right.numValue);
+		return LoxGeneric(left.numValue*right.numValue); 
+	runtimeError::reportRuntimeError("Operands must of num type.");
 	return LoxGeneric();//throw error
 }
 LoxGeneric operator*(const LoxGeneric& expr, double multiplicand) {
 	if(expr.type == GenericType::NUM)
 		return LoxGeneric(expr.numValue*multiplicand);
-	return LoxGeneric();//throw error
+	runtimeError::reportRuntimeError("Operand must of num type.");
+	return LoxGeneric();
 }
 LoxGeneric operator/(const LoxGeneric& left, const LoxGeneric& right) {
 	if(left.type == GenericType::NUM && right.type == GenericType::NUM)
 		return LoxGeneric(left.numValue/right.numValue);
+	runtimeError::reportRuntimeError("Operands must of num type.");
 	return LoxGeneric();//throw error
 }
 //comparison operators

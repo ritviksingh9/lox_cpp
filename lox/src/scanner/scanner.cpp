@@ -1,7 +1,7 @@
 #include <cctype>
 
 #include "scanner/scanner.hpp"
-#include "error/errorReporter.hpp"
+#include "error/staticErrorHandler.hpp"
 
 std::map<std::string, TokenType> Scanner::initMap() {
 	std::map<std::string, TokenType> m;
@@ -87,7 +87,7 @@ void Scanner::scanToken() {
 				identifier();
 			else {
 				successState = false;
-				reportScannerError(line_, "Unexpected character.");
+				staticError::reportScannerError(line_, "Unexpected character.");
 			}
 	}
 }
@@ -117,7 +117,7 @@ void Scanner::string() {
 	
 	if(isAtEnd()) {
 		successState = false;
-		reportScannerError(line_, "Unterminated string.");
+		staticError::reportScannerError(line_, "Unterminated string.");
 	}
 
 	advance();
