@@ -1,7 +1,9 @@
 #include "parser/parser.hpp"
+#include "error/errorReporter.hpp"
 
 Parser::Parser(const std::vector<Token>& sourceTokens) : tokens_(sourceTokens) {
 	current_ = 0;
+	successState_ = true;
 }
 
 bool Parser::isAtEnd() {return current_ >= tokens_.size();}
@@ -54,8 +56,7 @@ std::shared_ptr<Expr> Parser::primary() {
 	}
 	else {
 		std::shared_ptr<Expr> expr = expression();
-		//TODO: ERROR MESSAGE HANDLING!!!
-		//consume(TokenType::RIGHT_PAREN, "Expect ')' after expression.");
+		consume(TokenType::RIGHT_PAREN, "Expect ')' after expression.");
 		return std::shared_ptr<Expr>(new Grouping(expr));
 	}
 }
@@ -117,6 +118,11 @@ std::shared_ptr<Expr> Parser::parse() {
 	return expression();
 }
 
+Token Parser::consume(TokenType type, const std::string& message) {
+	if(check(type)) return advance();
+	reportParserError(tokens_[current_], message);
+	successState_ = false;
+}
 void Parser::synchronize() {
 	advance();
 	for(; !isAtEnd(); advance()) {
@@ -135,3 +141,4 @@ void Parser::synchronize() {
 		}
 	}
 }
+bool Parser::getSuccess() {return successState_;}

@@ -7,7 +7,8 @@ class Parser {
 private:
 	long unsigned int current_;
 	std::vector<Token> tokens_;
-	
+	bool successState_;
+
 	//utilities
 	Token advance();
 	bool isAtEnd();
@@ -24,12 +25,14 @@ private:
 	std::shared_ptr<Expr> expression();
 
 	//error handling
+	Token consume(TokenType type, const std::string& message);
 //	TokenImpl consume(TokenType type, const std::string& message);
 	void synchronize();
 
 public:
 	Parser(const std::vector<Token>& sourceTokens);
 	std::shared_ptr<Expr> parse();
+	bool getSuccess();
 };
 
 #endif

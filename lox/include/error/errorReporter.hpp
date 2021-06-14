@@ -1,4 +1,7 @@
 #include <stdexcept>
 #include <string>
 
-void reportError(int line, std::string message);
+#include "types/token.hpp"
+
+void reportScannerError(int line, std::string message);
+void reportParserError(Token Tok, std::string message);

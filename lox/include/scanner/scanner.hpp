@@ -16,11 +16,12 @@ private:
 	//std::vector<Token*> tokens;
 	std::vector<Token> tokens_;
 	static const std::map<std::string, TokenType> keywords_;
+	bool successState;
 
-	void scanToken(bool& successState);
+	void scanToken();
 	void identifier();
 	void number();
-	bool string();
+	void string();
 	bool match(char expected);
 	char peek();
 	char peekNext();
@@ -35,7 +36,8 @@ private:
 
 public:
 	Scanner(const std::string& source);
-	std::vector<Token> scanTokens(bool& successState);
+	std::vector<Token> scanTokens();
+	bool getSuccess();
 };
 
 #endif

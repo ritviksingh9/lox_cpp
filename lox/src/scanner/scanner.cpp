@@ -30,22 +30,23 @@ Scanner::Scanner(const std::string& source) : source_(source) {
 	start_ = 0;
 	current_ = 0;
 	line_ = 1;
+	successState = true;
 }
 
 const std::map<std::string, TokenType> Scanner::keywords_ = Scanner::initMap();
 
-std::vector<Token> Scanner::scanTokens(bool& successState) {
+std::vector<Token> Scanner::scanTokens() {
 
 	while(!isAtEnd()) {
 		start_ = current_;
-		scanToken(successState);
+		scanToken();
 	}
 	tokens_.emplace_back(TokenType::ENDOFFILE, "", line_);
 	return tokens_;
 }
 bool Scanner::isAtEnd() {return current_ >= source_.length();}
 
-void Scanner::scanToken(bool& successState) {
+void Scanner::scanToken() {
 	char c = advance();
 	switch(c) {
 		case '(': addToken(TokenType::LEFT_PAREN); break;
@@ -77,7 +78,7 @@ void Scanner::scanToken(bool& successState) {
 		case '\t': break;
 		case '\n': line_++; break;
 		
-		case '"': successState = successState && string(); break;
+		case '"': string(); break;
 
 		default:
 			if(isdigit(c)) 
@@ -86,7 +87,7 @@ void Scanner::scanToken(bool& successState) {
 				identifier();
 			else {
 				successState = false;
-				reportError(line_, "Unexpected character.");
+				reportScannerError(line_, "Unexpected character.");
 			}
 	}
 }
@@ -107,7 +108,7 @@ char Scanner::peekNext() {
 	if(current_+1 >= source_.length()) return '\0';
 	return source_[current_+1];
 }
-bool Scanner::string() {
+void Scanner::string() {
 	while(!isAtEnd() && peek() != '"') {
 		if(peek() == '\n') 
 			line_++;
@@ -115,14 +116,13 @@ bool Scanner::string() {
 	}
 	
 	if(isAtEnd()) {
-		reportError(line_, "Unterminated string.");
-		return false; //was not successful
+		successState = false;
+		reportScannerError(line_, "Unterminated string.");
 	}
 
 	advance();
 	//only consider the values inside the quotation marks
 	addToken(TokenType::STRING);
-	return true; //return success
 }
 void Scanner::number() {
 	for(; !isAtEnd() && isdigit(source_[current_]); advance());
@@ -150,3 +150,5 @@ bool Scanner::isAlphaNumeric(char c) {
 bool Scanner::isAlpha(char c) {
 	return isalpha(c) || c == '_';
 }
+
+bool Scanner::getSuccess() {return successState;}
