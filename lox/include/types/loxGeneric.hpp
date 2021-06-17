@@ -27,6 +27,8 @@ struct LoxGeneric {
 	LoxGeneric(std::string val);
 	//whether something is "true"
 	bool getTruthValue();
+	//print value
+	std::string toString();
 	//arithmetic operators
 	friend LoxGeneric operator+(const LoxGeneric& left, const LoxGeneric& right);
 	friend LoxGeneric operator-(const LoxGeneric& left, const LoxGeneric& right);

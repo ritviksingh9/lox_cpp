@@ -6,7 +6,8 @@ Parser::Parser(const std::vector<Token>& sourceTokens) : tokens_(sourceTokens) {
 	successState_ = true;
 }
 
-bool Parser::isAtEnd() {return current_ >= tokens_.size();}
+bool Parser::isAtEnd() {return current_ >= tokens_.size() 
+			|| tokens_[current_].type == TokenType::ENDOFFILE;}
 bool Parser::check(TokenType type) {
 	if(isAtEnd()) return false;
 	return tokens_[current_].type == type;
@@ -16,7 +17,7 @@ Token Parser::advance() {
 		current_++;
 	return tokens_[current_-1];
 }
-bool Parser::match(std::vector<TokenType> types) {
+bool Parser::match(const std::vector<TokenType>& types) {
 	for(auto x: types) {
 		if(check(x)) {
 			advance();
@@ -67,7 +68,8 @@ std::shared_ptr<Expr> Parser::unary() {
 		std::shared_ptr<Expr> right = unary();
 		return std::shared_ptr<Expr>(new Unary(op, right));
 	}
-	return primary();
+	std::shared_ptr<Expr> expr = primary();
+	return expr;
 }
 std::shared_ptr<Expr> Parser::factor() {
 	std::shared_ptr<Expr> expr = unary();
@@ -103,6 +105,10 @@ std::shared_ptr<Expr> Parser::comparison() {
 	return expr;
 }
 std::shared_ptr<Expr> Parser::equality() {
+	/*std::cout << tokens_[0].lexeme << " "
+		  << tokens_[1].lexeme << " "
+		  << tokens_[2].lexeme << "\n";*/
+//	std::cout << tokens_.size() << "\n";
 	std::shared_ptr<Expr> expr = comparison();
 	std::vector <TokenType> keyTypes = {TokenType::EQUAL, TokenType::BANG_EQUAL};
 
@@ -114,14 +120,37 @@ std::shared_ptr<Expr> Parser::equality() {
 	return expr;
 }
 std::shared_ptr<Expr> Parser::expression() { return equality();}
-std::shared_ptr<Expr> Parser::parse() {
-	return expression();
+std::vector<std::shared_ptr<Stmt>> Parser::parse() {
+	std::vector<std::shared_ptr<Stmt>> statements;
+	while (!isAtEnd()) {
+		statements.push_back(statement());
+	}
+	return statements;
 }
 
-Token Parser::consume(TokenType type, const std::string& message) {
+std::shared_ptr<Stmt> Parser::statement() {
+	if(check(TokenType::PRINT)) {
+		advance();
+		return printStatement();
+	}
+	return expressionStatement();
+}
+std::shared_ptr<Stmt> Parser::printStatement() {
+	std::shared_ptr<Expr> expr = expression();
+	consume(TokenType::SEMICOLON, "Expected ';' at end of statement");
+	return std::shared_ptr<Stmt>(new Print(expr));
+}
+std::shared_ptr<Stmt> Parser::expressionStatement() {
+	std::shared_ptr<Expr> expr = expression();
+	consume(TokenType::SEMICOLON, "Expected ';' at end of expression");
+	return std::shared_ptr<Stmt>(new Expression(expr));
+}
+
+Token Parser::consume(TokenType type, const std::string& errorMessage) {
 	if(check(type)) return advance();
-	staticError::reportParserError(tokens_[current_], message);
+	staticError::reportParserError(tokens_[current_], errorMessage);
 	successState_ = false;
+	return Token(TokenType::NIL, "", 1);
 }
 void Parser::synchronize() {
 	advance();

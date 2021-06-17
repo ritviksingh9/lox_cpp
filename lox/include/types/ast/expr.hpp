@@ -3,7 +3,6 @@
 
 #include <vector>
 #include <memory>
-
 #include "types/token.hpp"
 #include "types/literalGeneric.hpp"
 #include "types/loxGeneric.hpp"

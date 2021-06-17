@@ -1,3 +1,6 @@
+#ifndef LITERALGENERIC_H
+#define LITERALGENERIC_H
+
 #include <string>
 
 //this is a light wrapper for bool, double, std::string, and null types for literals
@@ -26,6 +29,8 @@ struct LiteralGeneric {
 				     type(LiteralType::NUM) {};
 	LiteralGeneric(std::string val) : boolValue(false),
  				     	  numValue(0),
-				     	  strValue(""),
+				     	  strValue(val),
 					  type(LiteralType::STRING) {};
 };
+
+#endif

@@ -1,7 +1,8 @@
 #ifndef PARSER_H
 #define PARSER_H
 
-#include "types/expression/expr.hpp"
+#include "types/ast/expr.hpp"
+#include "types/ast/stmt.hpp"
 
 class Parser {
 private:
@@ -13,7 +14,12 @@ private:
 	Token advance();
 	bool isAtEnd();
 	bool check(TokenType type);
-	bool match(std::vector<TokenType> types);
+	bool match(const std::vector<TokenType>& types);
+
+	//statement utilities
+	std::shared_ptr<Stmt> statement();
+	std::shared_ptr<Stmt> printStatement();
+	std::shared_ptr<Stmt> expressionStatement();
 	
 	//grammar rules
 	std::shared_ptr<Expr> primary();
@@ -25,13 +31,12 @@ private:
 	std::shared_ptr<Expr> expression();
 
 	//error handling
-	Token consume(TokenType type, const std::string& message);
-//	TokenImpl consume(TokenType type, const std::string& message);
+	Token consume(TokenType type, const std::string& errorMessage);
 	void synchronize();
 
 public:
 	Parser(const std::vector<Token>& sourceTokens);
-	std::shared_ptr<Expr> parse();
+	std::vector<std::shared_ptr<Stmt>> parse();
 	bool getSuccess();
 };
 

@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "types/loxGeneric.hpp"
 #include "error/runtimeErrorHandler.hpp"
 
@@ -18,6 +20,19 @@ LoxGeneric::LoxGeneric(std::string val) : type{GenericType::STRING},
 					  boolValue(false), 
 					  numValue(0), 
 					  strValue(val) {};
+
+std::string LoxGeneric::toString() {
+	switch(type) {
+		case GenericType::NONE:
+			return "";
+		case GenericType::BOOL:
+			return boolValue ? "true" : "false";
+		case GenericType::NUM:
+			return std::to_string(numValue);
+		case GenericType:: STRING:
+			return strValue;
+	}
+}
 
 bool LoxGeneric::getTruthValue() {
 	if(type == GenericType::NONE) return false;

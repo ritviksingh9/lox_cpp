@@ -3,6 +3,7 @@
 #include "lox/lox.hpp"
 #include "scanner/scanner.hpp"
 #include "parser/parser.hpp"
+#include "interpreter/interpreter.hpp"
 
 void lox::runPrompt() { 
 	std::string line;
@@ -31,16 +32,37 @@ void lox::run(const std::string& source) {
 }
 
 int main(int argc, char* argv[]) {
-	std::string str = "-123 * 45.67 / 0";
+	/*
+	std::string str1 = "-123 * 45.67 / 0";
 	bool successState = true;
 	Scanner sc(str);
 	auto tokens = sc.scanTokens();
-	bool succesState = sc.getSuccess();
+	succesState = sc.getSuccess();
 	Parser parser(tokens);
 	std::shared_ptr<Expr> expr = parser.parse();
 	LoxGeneric eval = expr -> evaluate();
 	std::cout << expr -> getString() << std::endl;
 	std::cout << eval.numValue << std::endl;
+	*/	
+	std::string str2 = "print \"hello world\";  
+			    print 2*8;";
+	bool successState = true;
+	//scanning
+	Scanner sc(str2);
+	std::vector<Token> tokens = sc.scanTokens();
+	successState = successState && sc.getSuccess();
+	//parsing
+	Parser parser(tokens);
+	std::vector<std::shared_ptr<Stmt>> statements = parser.parse();
+	successState = successState && parser.getSuccess();
+	//interpreting
+	Interpreter interpreter;
+	interpreter.interpret(statements);
+	successState = successState && interpreter.getSuccess();
+	std::cout << "Success State of program: " << successState << std::endl;
+
+
+	/*
 	if(argc == 1) {
 		lox::runPrompt();	
 	}
@@ -49,7 +71,7 @@ int main(int argc, char* argv[]) {
 	}
 	else {
 		std::cerr << "Usage: lox [script]\n";
-	}
+	}*/
 
 	return 0;
 }

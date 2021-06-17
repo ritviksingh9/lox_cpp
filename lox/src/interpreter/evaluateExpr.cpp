@@ -1,4 +1,4 @@
-#include "types/expression/expr.hpp"
+#include "types/ast/expr.hpp"
 
 LoxGeneric Binary::evaluate() const {
 	LoxGeneric leftExpr = left -> evaluate();
