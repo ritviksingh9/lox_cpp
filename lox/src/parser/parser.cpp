@@ -58,7 +58,7 @@ std::shared_ptr<Expr> Parser::primary() {
 	}
 	else if(check(TokenType::IDENTIFIER)) {
 		advance();
-		return std::shared_ptr<Expr>(new IdentifierExpr(tokens_[current_-1].lexeme));
+		return std::shared_ptr<Expr>(new IdentifierExpr(tokens_[current_-1]));
 	}
 	else if(check(TokenType::LEFT_PAREN)) {
 		advance();
@@ -114,7 +114,7 @@ std::shared_ptr<Expr> Parser::comparison() {
 }
 std::shared_ptr<Expr> Parser::equality() {
 	std::shared_ptr<Expr> expr = comparison();
-	std::vector <TokenType> keyTypes = {TokenType::EQUAL, TokenType::BANG_EQUAL};
+	std::vector <TokenType> keyTypes = {TokenType::EQUAL_EQUAL, TokenType::BANG_EQUAL};
 
 	while(match(keyTypes)) {
 		Token op = tokens_[current_-1];
@@ -123,7 +123,20 @@ std::shared_ptr<Expr> Parser::equality() {
 	}
 	return expr;
 }
-std::shared_ptr<Expr> Parser::expression() { return equality();}
+std::shared_ptr<Expr> Parser::assignment() {
+	std::shared_ptr<Expr> expr = equality();
+	if(check(TokenType::EQUAL)) {
+		Token target = tokens_[current_-1];
+		advance();
+		std::shared_ptr<Expr> value = assignment();
+		if(expr->type == ExprType::IDENTIFIER) {
+			return std::shared_ptr<Expr>(new AssignExpr(target, value));
+		}
+		staticError::reportSyntaxError(tokens_[current_-1], "Invalid assignment target");
+	}
+	return expr;
+}
+std::shared_ptr<Expr> Parser::expression() { return assignment();}
 std::vector<std::shared_ptr<Stmt>> Parser::parse() {
 	std::vector<std::shared_ptr<Stmt>> statements;
 	while (!isAtEnd()) {

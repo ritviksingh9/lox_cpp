@@ -7,9 +7,12 @@
 #include "types/literalGeneric.hpp"
 #include "types/loxGeneric.hpp"
 
+enum class ExprType {BINARY, GROUPING, LITERAL, UNARY, IDENTIFIER, ASSIGN};
 
 class Expr{
 public:
+	ExprType type;
+	Expr(ExprType type) : type(type) {}
 	virtual ~Expr() {}
 	virtual std::string getString() const = 0;
 	virtual LoxGeneric evaluate() const = 0;
@@ -21,7 +24,8 @@ public:
 	Token op;
 	std::shared_ptr<Expr> right;
 
-	Binary(std::shared_ptr<Expr> left, Token op, std::shared_ptr<Expr> right) : left(left),
+	Binary(std::shared_ptr<Expr> left, Token op, std::shared_ptr<Expr> right) : Expr(ExprType::BINARY),
+										    left(left),
 	                                                                            op(op),
 	                                                                            right(right) {}
 
@@ -32,7 +36,8 @@ class Grouping: public Expr {
 public:
 	std::shared_ptr<Expr> expression;
 
-	Grouping(std::shared_ptr<Expr> expression) : expression(expression) {}
+	Grouping(std::shared_ptr<Expr> expression) : Expr(ExprType::GROUPING),
+					             expression(expression) {}
 
 	std::string getString() const override;
 	LoxGeneric evaluate() const override;
@@ -41,10 +46,13 @@ class Literal: public Expr {
 public:
 	LiteralGeneric value;
 
-	Literal() {}
-	Literal(bool value) : value(value) {}
-	Literal(double value) : value(value) {}
-	Literal(std::string value) : value(value) {}
+	Literal() : Expr(type) {}
+	Literal(bool value) : Expr(ExprType::LITERAL),
+			      value(value) {}
+	Literal(double value) : Expr(ExprType::LITERAL),
+				value(value) {}
+	Literal(std::string value) : Expr(ExprType::LITERAL),
+				     value(value) {}
 
 	std::string getString() const override;
 	LoxGeneric evaluate() const override;
@@ -54,7 +62,8 @@ public:
 	Token op;
 	std::shared_ptr<Expr> right;
 
-	Unary(Token op, std::shared_ptr<Expr> right) : op(op),
+	Unary(Token op, std::shared_ptr<Expr> right) : Expr(ExprType::UNARY),
+						       op(op),
 	                                               right(right) {}
 
 	std::string getString() const override;
@@ -62,9 +71,22 @@ public:
 };
 class IdentifierExpr: public Expr {
 public:
-	std::string name;
+	Token target;
 
-	IdentifierExpr(const std::string& name) : name(name) {}
+	IdentifierExpr(const Token& target) : Expr(ExprType::IDENTIFIER),
+						  target(target) {}
+
+	std::string getString() const override;
+	LoxGeneric evaluate() const override;
+};
+class AssignExpr : public Expr {
+public:
+	Token target;
+	std::shared_ptr<Expr> expression;
+
+	AssignExpr(const Token& target, std::shared_ptr<Expr> expression) : Expr(ExprType::ASSIGN),
+						       target(target),
+						       expression(expression) {}
 
 	std::string getString() const override;
 	LoxGeneric evaluate() const override;

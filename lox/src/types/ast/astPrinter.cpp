@@ -33,4 +33,7 @@ std::string Literal::getString() const {
 	else
 		return "nil";
 }
-std::string IdentifierExpr::getString() const { return name;}
+std::string IdentifierExpr::getString() const { return target.lexeme;}
+std::string AssignExpr::getString() const { 
+	return target.lexeme + expression->getString();
+}

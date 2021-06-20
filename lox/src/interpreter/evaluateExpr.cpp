@@ -60,4 +60,9 @@ LoxGeneric Unary::evaluate() const {
 	}
 	return LoxGeneric();
 }
-LoxGeneric IdentifierExpr::evaluate() const {return interpreterEnv::environment[name];}
+LoxGeneric IdentifierExpr::evaluate() const {return interpreterEnv::retrieveVar(target);}
+LoxGeneric AssignExpr::evaluate() const {
+	LoxGeneric value = expression -> evaluate();
+	interpreterEnv::assignVar(target, value);
+	return value;
+}

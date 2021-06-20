@@ -4,6 +4,25 @@
 
 namespace interpreterEnv {
 	std::map<std::string, LoxGeneric> environment;
+	bool successState = true;
+
+
+	LoxGeneric retrieveVar(const Token& tok) {
+		if(environment.count(tok.lexeme) == 0) {
+			successState = false;
+			staticError::reportSyntaxError(tok);
+			return LoxGeneric();
+		}
+		return environment[tok.lexeme];
+	}
+	void assignVar(const Token& tok, LoxGeneric value) {
+		if(environment.count(tok.lexeme) == 0) {
+			successState = false;
+			staticError::reportSyntaxError(tok);
+			return;
+		}	
+		environment[tok.lexeme] = value;
+	}
 }
 
 void Interpreter::addVar(std::shared_ptr<VarStmt> varStatement) {
@@ -18,7 +37,7 @@ LoxGeneric Interpreter::retrieveVar(const Token& tok) {
 	}
 	return interpreterEnv::environment[tok.lexeme];
 }
-Interpreter::Interpreter() : successState_(true) {}
+Interpreter::Interpreter() : successState_(true) {interpreterEnv::successState = true;}
 void Interpreter::interpret(const std::vector<std::shared_ptr<Stmt>>& statements) {
 	for(auto stmt: statements) {
 		if(stmt -> type == StmtType::VAR) {
@@ -30,4 +49,4 @@ void Interpreter::interpret(const std::vector<std::shared_ptr<Stmt>>& statements
 	}
 }
 
-bool Interpreter::getSuccess() {return successState_;}
+bool Interpreter::getSuccess() {return interpreterEnv::successState;}
