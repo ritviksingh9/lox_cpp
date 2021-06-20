@@ -9,6 +9,7 @@ private:
 	long unsigned int current_;
 	std::vector<Token> tokens_;
 	bool successState_;
+	bool catchError_;
 
 	//utilities
 	Token advance();
@@ -20,6 +21,7 @@ private:
 	std::shared_ptr<Stmt> statement();
 	std::shared_ptr<Stmt> printStatement();
 	std::shared_ptr<Stmt> expressionStatement();
+	std::shared_ptr<Stmt> varDeclaration();
 	
 	//grammar rules
 	std::shared_ptr<Expr> primary();

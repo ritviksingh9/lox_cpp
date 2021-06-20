@@ -1,4 +1,5 @@
 #include "types/ast/expr.hpp"
+#include "interpreter/interpreterEnv.hpp"
 
 LoxGeneric Binary::evaluate() const {
 	LoxGeneric leftExpr = left -> evaluate();
@@ -59,3 +60,4 @@ LoxGeneric Unary::evaluate() const {
 	}
 	return LoxGeneric();
 }
+LoxGeneric IdentifierExpr::evaluate() const {return interpreterEnv::environment[name];}

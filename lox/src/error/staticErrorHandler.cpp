@@ -18,4 +18,8 @@ void reportParserError(const Token& tok, const std::string& message) {
 			  << tok.lexeme << "' " << message << std::endl;
 	}
 }
+void reportSyntaxError(const Token& tok) {
+	std::cerr << "Syntax error while parsing: line " << tok.line << " " <<	"'" 
+		  << tok.lexeme << "'" << "not defined. " << std::endl;
+}
 }

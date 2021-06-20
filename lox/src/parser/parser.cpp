@@ -4,6 +4,7 @@
 Parser::Parser(const std::vector<Token>& sourceTokens) : tokens_(sourceTokens) {
 	current_ = 0;
 	successState_ = true;
+	catchError_ = false;
 }
 
 bool Parser::isAtEnd() {return current_ >= tokens_.size() 
@@ -55,11 +56,18 @@ std::shared_ptr<Expr> Parser::primary() {
 			return std::shared_ptr<Expr> (new Literal());
 		}
 	}
-	else {
+	else if(check(TokenType::IDENTIFIER)) {
+		advance();
+		return std::shared_ptr<Expr>(new IdentifierExpr(tokens_[current_-1].lexeme));
+	}
+	else if(check(TokenType::LEFT_PAREN)) {
+		advance();
 		std::shared_ptr<Expr> expr = expression();
 		consume(TokenType::RIGHT_PAREN, "Expect ')' after expression.");
 		return std::shared_ptr<Expr>(new Grouping(expr));
 	}
+	staticError::reportParserError(tokens_[current_], "Expected expression");
+	return nullptr;
 }
 std::shared_ptr<Expr> Parser::unary() {
 	std::vector <TokenType> keyTypes = {TokenType::BANG, TokenType::MINUS};
@@ -105,10 +113,6 @@ std::shared_ptr<Expr> Parser::comparison() {
 	return expr;
 }
 std::shared_ptr<Expr> Parser::equality() {
-	/*std::cout << tokens_[0].lexeme << " "
-		  << tokens_[1].lexeme << " "
-		  << tokens_[2].lexeme << "\n";*/
-//	std::cout << tokens_.size() << "\n";
 	std::shared_ptr<Expr> expr = comparison();
 	std::vector <TokenType> keyTypes = {TokenType::EQUAL, TokenType::BANG_EQUAL};
 
@@ -123,7 +127,15 @@ std::shared_ptr<Expr> Parser::expression() { return equality();}
 std::vector<std::shared_ptr<Stmt>> Parser::parse() {
 	std::vector<std::shared_ptr<Stmt>> statements;
 	while (!isAtEnd()) {
-		statements.push_back(statement());
+		if(check(TokenType::VAR)) {
+			advance();
+			statements.push_back(varDeclaration());
+		}
+		else 
+			statements.push_back(statement());
+		//synchronize to the next statement/declaration
+		if(catchError_)
+			synchronize();
 	}
 	return statements;
 }
@@ -138,22 +150,35 @@ std::shared_ptr<Stmt> Parser::statement() {
 std::shared_ptr<Stmt> Parser::printStatement() {
 	std::shared_ptr<Expr> expr = expression();
 	consume(TokenType::SEMICOLON, "Expected ';' at end of statement");
-	return std::shared_ptr<Stmt>(new Print(expr));
+	return std::shared_ptr<Stmt>(new PrintStmt(expr));
 }
 std::shared_ptr<Stmt> Parser::expressionStatement() {
 	std::shared_ptr<Expr> expr = expression();
 	consume(TokenType::SEMICOLON, "Expected ';' at end of expression");
-	return std::shared_ptr<Stmt>(new Expression(expr));
+	return std::shared_ptr<Stmt>(new ExpressionStmt(expr));
+}
+std::shared_ptr<Stmt> Parser::varDeclaration() {
+	Token name = consume(TokenType::IDENTIFIER, "Expected variable name");
+	std::shared_ptr<Expr> initializer = nullptr;
+	//check if variable is initialized 
+	if(check(TokenType::EQUAL)) {
+		advance();
+		initializer = expression();
+	}
+	consume(TokenType::SEMICOLON, "Expected ';' at end of variable declaration");
+	return std::shared_ptr<Stmt> (new VarStmt(name, initializer));
 }
 
 Token Parser::consume(TokenType type, const std::string& errorMessage) {
 	if(check(type)) return advance();
 	staticError::reportParserError(tokens_[current_], errorMessage);
 	successState_ = false;
+	catchError_ = true;
 	return Token(TokenType::NIL, "", 1);
 }
 void Parser::synchronize() {
 	advance();
+	catchError_ = false;
 	for(; !isAtEnd(); advance()) {
 		if(tokens_[current_-1].type == TokenType::SEMICOLON) return;
 

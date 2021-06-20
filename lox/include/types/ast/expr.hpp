@@ -60,5 +60,13 @@ public:
 	std::string getString() const override;
 	LoxGeneric evaluate() const override;
 };
+class IdentifierExpr: public Expr {
+public:
+	std::string name;
 
+	IdentifierExpr(const std::string& name) : name(name) {}
+
+	std::string getString() const override;
+	LoxGeneric evaluate() const override;
+};
 #endif

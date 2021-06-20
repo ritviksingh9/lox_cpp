@@ -32,5 +32,5 @@ std::string Literal::getString() const {
 		return value.strValue;
 	else
 		return "nil";
-	
 }
+std::string IdentifierExpr::getString() const { return name;}
