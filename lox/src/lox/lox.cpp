@@ -45,7 +45,8 @@ int main(int argc, char* argv[]) {
 	std::cout << eval.numValue << std::endl;
 	*/	
 //	std::string str2 = "print \"hello world\";  print 2*8;";
-	std::string str2 = "var x = 3; print x=4; var y = 4; y = x+y; print y;";
+//	std::string str2 = "var x = 3; print x=4; var y = 4; y = x+y; print y;";
+	std::string str2 = "var a=3; var b=4; var c = 9;\n {var a = 5;\n b=10; \n print a; print b; print c;} print a; print b;";
 	bool successState = true;
 	//scanning
 	Scanner sc(str2);

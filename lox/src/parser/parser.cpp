@@ -158,12 +158,29 @@ std::shared_ptr<Stmt> Parser::statement() {
 		advance();
 		return printStatement();
 	}
+	else if(check(TokenType::LEFT_BRACE)) {
+		advance();
+		return std::shared_ptr<Stmt>(new Block(blockStatement()));
+	}
 	return expressionStatement();
 }
 std::shared_ptr<Stmt> Parser::printStatement() {
 	std::shared_ptr<Expr> expr = expression();
 	consume(TokenType::SEMICOLON, "Expected ';' at end of statement");
 	return std::shared_ptr<Stmt>(new PrintStmt(expr));
+}
+std::vector<std::shared_ptr<Stmt>> Parser::blockStatement() {
+	std::vector<std::shared_ptr<Stmt>> statements;	
+	while(!check(TokenType::RIGHT_BRACE) && !isAtEnd()) {
+		if(check(TokenType::VAR)) {
+			advance();
+			statements.push_back(varDeclaration());
+		}
+		else 
+			statements.push_back(statement());
+	}
+	consume(TokenType::RIGHT_BRACE, "Expected '}' after block statement.");
+	return statements;
 }
 std::shared_ptr<Stmt> Parser::expressionStatement() {
 	std::shared_ptr<Expr> expr = expression();

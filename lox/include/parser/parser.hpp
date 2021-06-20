@@ -20,6 +20,7 @@ private:
 	//statement utilities
 	std::shared_ptr<Stmt> statement();
 	std::shared_ptr<Stmt> printStatement();
+	std::vector<std::shared_ptr<Stmt>> blockStatement();
 	std::shared_ptr<Stmt> expressionStatement();
 	std::shared_ptr<Stmt> varDeclaration();
 	
