@@ -172,6 +172,10 @@ std::shared_ptr<Stmt> Parser::statement() {
 		advance();
 		return ifStatement();
 	}
+	else if(check(TokenType::WHILE)) {
+		advance();
+		return whileStatement();
+	}
 	// generic statement which is just an expression
 	return expressionStatement();
 }
@@ -210,6 +214,13 @@ std::shared_ptr<Stmt> Parser::ifStatement() {
 		elseStmt = statement();
 	}
 	return std::shared_ptr<Stmt>(new IfStmt(condition, thenStmt, elseStmt));
+}
+std::shared_ptr<Stmt> Parser::whileStatement() {
+	consume(TokenType::LEFT_PAREN, "Expected '(' before 'while' condition.");
+	std::shared_ptr<Expr> condition = expression();
+	consume(TokenType::RIGHT_PAREN, "Expected ')' after 'while' condition.");
+	std::shared_ptr<Stmt> body = statement();
+	return std::shared_ptr<Stmt>(new WhileStmt(condition, body));
 }
 std::shared_ptr<Stmt> Parser::expressionStatement() {
 	// retrieve expression

@@ -34,3 +34,9 @@ void IfStmt::evaluate() const {
 	else if(elseStmt != nullptr)
 		elseStmt -> evaluate();
 }
+void WhileStmt::evaluate() const {
+	while(condition->evaluate().getTruthValue()) {
+		body -> evaluate();
+	}
+}
+

@@ -19,7 +19,7 @@ LoxGeneric Binary::evaluate() const {
 	LoxGeneric rightExpr = right -> evaluate();
 	// deal with other binary operators
 	switch(op.type) {
-		// arithmetic Operators 
+		// arithmetic operators 
 		case TokenType::PLUS:
 			return leftExpr + rightExpr;
 			break;
@@ -32,7 +32,7 @@ LoxGeneric Binary::evaluate() const {
 		case TokenType::SLASH:
 			return leftExpr / rightExpr;
 			break;
-		// comparison Operators
+		// comparison operators
 		case TokenType::EQUAL_EQUAL:
 			return LoxGeneric(leftExpr == rightExpr);
 			break;
@@ -62,6 +62,8 @@ LoxGeneric Literal::evaluate() const {
 	return LoxGeneric();
 }
 LoxGeneric Unary::evaluate() const {
+	// a minus (-) to the left of a number returns its negative
+	// a bang (!) to the left of an expression returns its logical compliment
 	LoxGeneric rightExpr =right -> evaluate();
 	switch(op.type) {
 		case TokenType::MINUS:
@@ -75,6 +77,7 @@ LoxGeneric Unary::evaluate() const {
 }
 LoxGeneric IdentifierExpr::evaluate() const {return interpreterEnv::retrieveVar(target);}
 LoxGeneric AssignExpr::evaluate() const {
+	// evaluate the expression and set it equal to the variable
 	LoxGeneric value = expression -> evaluate();
 	interpreterEnv::assignVar(target, value);
 	return value;
