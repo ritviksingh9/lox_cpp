@@ -8,7 +8,7 @@
 #include "types/loxGeneric.hpp"
 #include "types/ast/expr.hpp"
 
-enum class StmtType {EXPR, PRINT, VAR, BLOCK};
+enum class StmtType {EXPR, PRINT, VAR, BLOCK, IF};
 
 class Stmt{
 public:
@@ -49,13 +49,27 @@ public:
 //	void evaluate() const override;
 	LoxGeneric declaration() const override;
 };
-class Block: public Stmt {
+class BlockStmt: public Stmt {
 public:
 	std::vector<std::shared_ptr<Stmt>> statements;
 
-	Block(const std::vector<std::shared_ptr<Stmt>>& statements) : Stmt(StmtType::BLOCK),
+	BlockStmt(const std::vector<std::shared_ptr<Stmt>>& statements) : Stmt(StmtType::BLOCK),
 								      statements(statements) {};
 	
+	void evaluate() const override;
+};
+class IfStmt: public Stmt {
+public:
+	std::shared_ptr<Expr> condition;
+	std::shared_ptr<Stmt> thenStmt;
+	std::shared_ptr<Stmt> elseStmt;
+
+	IfStmt(const std::shared_ptr<Expr>& condition, 
+	       const std::shared_ptr<Stmt>& thenStmt,
+	       const std::shared_ptr<Stmt>& elseStmt) : Stmt(StmtType::IF),
+	       						condition(condition),
+							thenStmt(thenStmt),
+							elseStmt(elseStmt) {}
 	void evaluate() const override;
 };
 #endif

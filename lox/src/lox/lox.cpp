@@ -45,8 +45,8 @@ int main(int argc, char* argv[]) {
 	std::cout << eval.numValue << std::endl;
 	*/	
 //	std::string str2 = "print \"hello world\";  print 2*8;";
-//	std::string str2 = "var x = 3; print x=4; var y = 4; y = x+y; print y;";
-	std::string str2 = "var a=3; var b=4; var c = 9;\n {var a = 5;\n b=10; \n print a; print b; print c;} print a; print b;";
+//	std::string str2 = "var a=3; var b=4; var c = 9;\n {var a = 5;\n b=10; \n print a; print b; print c;} print a; print b;";
+	std::string str2 = "var a = 2; var b = 1; \nif(a < b) {\nprint \"if\";} \nelse { print \"else\";}";
 	bool successState = true;
 	// scanning
 	// the scanning process takes in a string corresponding to source code
@@ -63,6 +63,7 @@ int main(int argc, char* argv[]) {
 	// interpreting
 	// takes in a std::vector of Stmts and executes the statements through a tree-walk
 	// algorithm
+	std::cout << "WADWADAWDAWDAWDAW " <<  successState << std::endl;
 	Interpreter interpreter;
 	interpreter.interpret(statements);
 	successState = successState && interpreter.getSuccess();

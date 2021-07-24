@@ -165,7 +165,12 @@ std::shared_ptr<Stmt> Parser::statement() {
 	// new block of code which corresponds to new scope
 	else if(check(TokenType::LEFT_BRACE)) {
 		advance();
-		return std::shared_ptr<Stmt>(new Block(blockStatement()));
+		return std::shared_ptr<Stmt>(new BlockStmt(blockStatement()));
+	}
+	// conditional branching
+	else if(check(TokenType::IF)) {
+		advance();
+		return ifStatement();
 	}
 	// generic statement which is just an expression
 	return expressionStatement();
@@ -191,7 +196,23 @@ std::vector<std::shared_ptr<Stmt>> Parser::blockStatement() {
 	consume(TokenType::RIGHT_BRACE, "Expected '}' after block statement.");
 	return statements;
 }
+std::shared_ptr<Stmt> Parser::ifStatement() {
+	// new if (and possibly else) statement
+	// if statement condition must be wrapped in parentheses
+	consume(TokenType::LEFT_PAREN, "Expected '(' before 'if' condition.");
+	std::shared_ptr<Expr> condition = expression();
+	consume(TokenType::RIGHT_PAREN, "Expected ')' after 'if' condition.");
+	std::shared_ptr<Stmt> thenStmt = statement();
+	// not all if statements need an else
+	std::shared_ptr<Stmt> elseStmt = nullptr;
+	if(check(TokenType::ELSE)) {
+		advance();
+		elseStmt = statement();
+	}
+	return std::shared_ptr<Stmt>(new IfStmt(condition, thenStmt, elseStmt));
+}
 std::shared_ptr<Stmt> Parser::expressionStatement() {
+	// retrieve expression
 	std::shared_ptr<Expr> expr = expression();
 	consume(TokenType::SEMICOLON, "Expected ';' at end of expression");
 	return std::shared_ptr<Stmt>(new ExpressionStmt(expr));

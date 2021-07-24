@@ -1,12 +1,26 @@
 #include "types/ast/expr.hpp"
 #include "interpreter/interpreterEnv.hpp"
+#include <iostream>
 
 LoxGeneric Binary::evaluate() const {
+	// only initially evaluate left one to allow for short-circuiting of logical operators
 	LoxGeneric leftExpr = left -> evaluate();
+	// logical opererators
+	if(op.type == TokenType::AND) {
+		// short-circuit AND operator
+		if(!leftExpr.getTruthValue()) {return leftExpr;}
+		return right -> evaluate();
+	}
+	else if(op.type == TokenType::OR) {
+		// short-circuit OR operator
+		if(leftExpr.getTruthValue()) {return leftExpr;}
+		return right -> evaluate();
+	}
+	// evaluate right expression for the rest of the binary operators
 	LoxGeneric rightExpr = right -> evaluate();
-	
+	// deal with other binary operators
 	switch(op.type) {
-		//Arithmetic Operators 
+		// arithmetic Operators 
 		case TokenType::PLUS:
 			return leftExpr + rightExpr;
 			break;
@@ -19,24 +33,25 @@ LoxGeneric Binary::evaluate() const {
 		case TokenType::SLASH:
 			return leftExpr / rightExpr;
 			break;
-		//Comparison Operators
+		// comparison Operators
 		case TokenType::EQUAL_EQUAL:
-			return left == right;
+			return LoxGeneric(left == right);
 			break;
 		case TokenType::BANG_EQUAL:
-			return left != right;
+			return LoxGeneric(left != right);
 			break;
 		case TokenType::GREATER_EQUAL:
-			return left >= right;
+			return LoxGeneric(left >= right);
 			break;
 		case TokenType::LESS_EQUAL:
-			return left <= right;
+			return LoxGeneric(left <= right);
 			break;
 		case TokenType::GREATER:
-			return left > right;
+			return LoxGeneric(left > right);
 			break;
 		case TokenType::LESS:
-			return left < right;
+			std::cout << left << " " << right << std::endl;
+			return LoxGeneric(left < right);
 			break;
 	}	
 	return LoxGeneric();
