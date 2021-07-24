@@ -48,15 +48,21 @@ int main(int argc, char* argv[]) {
 //	std::string str2 = "var x = 3; print x=4; var y = 4; y = x+y; print y;";
 	std::string str2 = "var a=3; var b=4; var c = 9;\n {var a = 5;\n b=10; \n print a; print b; print c;} print a; print b;";
 	bool successState = true;
-	//scanning
+	// scanning
+	// the scanning process takes in a string corresponding to source code
+	// and outputs a std::vector of tokens corresponding to lexical analysis
 	Scanner sc(str2);
 	std::vector<Token> tokens = sc.scanTokens();
 	successState = successState && sc.getSuccess();
-	//parsing
+	// parsing
+	// the parsing process takes in a std::vector of tokens 
+	// and outputs a std::vector of Stmts corresponding to a statement syntax tree
 	Parser parser(tokens);
 	std::vector<std::shared_ptr<Stmt>> statements = parser.parse();
 	successState = successState && parser.getSuccess();
-	//interpreting
+	// interpreting
+	// takes in a std::vector of Stmts and executes the statements through a tree-walk
+	// algorithm
 	Interpreter interpreter;
 	interpreter.interpret(statements);
 	successState = successState && interpreter.getSuccess();

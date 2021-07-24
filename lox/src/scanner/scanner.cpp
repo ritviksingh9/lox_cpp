@@ -36,7 +36,7 @@ Scanner::Scanner(const std::string& source) : source_(source) {
 const std::map<std::string, TokenType> Scanner::keywords_ = Scanner::initMap();
 
 std::vector<Token> Scanner::scanTokens() {
-
+	// scans the string passed into the class and outputs a vector of tokens
 	while(!isAtEnd()) {
 		start_ = current_;
 		scanToken();
@@ -47,6 +47,7 @@ std::vector<Token> Scanner::scanTokens() {
 bool Scanner::isAtEnd() {return current_ >= source_.length();}
 
 void Scanner::scanToken() {
+	// processes the upcoming token differently depending on its type
 	char c = advance();
 	switch(c) {
 		case '(': addToken(TokenType::LEFT_PAREN); break;
@@ -59,7 +60,7 @@ void Scanner::scanToken() {
 		case '+': addToken(TokenType::PLUS); break;
 		case ';': addToken(TokenType::SEMICOLON); break;
 		case '*': addToken(TokenType::STAR); break; 
-		
+		// binary operators
 		case '!': addToken(match('=') ? TokenType::BANG_EQUAL : 
 						TokenType::BANG); break;
 		case '=': addToken(match('=') ? TokenType::EQUAL_EQUAL : 
@@ -68,21 +69,23 @@ void Scanner::scanToken() {
 						TokenType::BANG); break;
 		case '>': addToken(match('=') ? TokenType::GREATER_EQUAL : 
 						TokenType::BANG); break;
+		// ignore comments
 		case '/':
-			if(match('/')) //ignore comments
+			if(match('/')) 
 				while(!isAtEnd() && peek() != '\n')  advance();
 			else addToken(TokenType::SLASH);	
-	
+		// whitespace
 		case ' ': break;
 		case '\r': break;
 		case '\t': break;
 		case '\n': line_++; break;
-		
+		// string literals
 		case '"': string(); break;
-
 		default:
+			// checks if it's a number
 			if(isdigit(c)) 
 				number();
+			// checks if it's an identifier
 			else if(isalpha(c))
 				identifier();
 			else {
@@ -93,6 +96,7 @@ void Scanner::scanToken() {
 }
 char Scanner::advance() {return source_.at(current_++);} 
 void Scanner::addToken(TokenType type) {
+	// add token of a particular type to the internal buffer
 	std::string lexeme = source_.substr(start_, current_-start_);
 	tokens_.emplace_back(type, lexeme, line_);
 }
@@ -109,22 +113,24 @@ char Scanner::peekNext() {
 	return source_[current_+1];
 }
 void Scanner::string() {
+	// cycle through all the output
 	while(!isAtEnd() && peek() != '"') {
 		if(peek() == '\n') 
 			line_++;
 		advance();
 	}
-	
+	// check for unterminated string
 	if(isAtEnd()) {
 		successState = false;
 		staticError::reportScannerError(line_, "Unterminated string.");
 	}
-
 	advance();
-	//only consider the values inside the quotation marks
+	// only consider the values inside the quotation marks
 	addToken(TokenType::STRING);
 }
 void Scanner::number() {
+	// checks if the upcoming substring is a number and then
+	// adds it to the internal buffer
 	for(; !isAtEnd() && isdigit(source_[current_]); advance());
 
 	if(!isAtEnd() && source_[current_] == '.' && isdigit(peekNext())) {
@@ -135,6 +141,8 @@ void Scanner::number() {
 	addToken(TokenType::NUMBER);
 }
 void Scanner::identifier() {
+	// checks if the upcoming substring corresponds to an identifier and then
+	// adds it to the internal buffer
 	for(;!isAtEnd() && isAlphaNumeric(peek()); advance());
 	
 	TokenType type = TokenType::IDENTIFIER;

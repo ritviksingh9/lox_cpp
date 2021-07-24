@@ -1,0 +1,8 @@
+#metaprogramming utilities
+tools/
+
+#build
+build/
+
+#vim swap files
+**/*.swp

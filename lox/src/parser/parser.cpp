@@ -138,15 +138,18 @@ std::shared_ptr<Expr> Parser::assignment() {
 }
 std::shared_ptr<Expr> Parser::expression() { return assignment();}
 std::vector<std::shared_ptr<Stmt>> Parser::parse() {
+	// parses the internal buffer of tokens and outputs the corresponding statements
 	std::vector<std::shared_ptr<Stmt>> statements;
 	while (!isAtEnd()) {
+		// check if this is a variable decalration
 		if(check(TokenType::VAR)) {
 			advance();
 			statements.push_back(varDeclaration());
 		}
+		// generic statement
 		else 
 			statements.push_back(statement());
-		//synchronize to the next statement/declaration
+		// synchronize to the next statement/declaration
 		if(catchError_)
 			synchronize();
 	}
@@ -154,24 +157,30 @@ std::vector<std::shared_ptr<Stmt>> Parser::parse() {
 }
 
 std::shared_ptr<Stmt> Parser::statement() {
+	// print statement
 	if(check(TokenType::PRINT)) {
 		advance();
 		return printStatement();
 	}
+	// new block of code which corresponds to new scope
 	else if(check(TokenType::LEFT_BRACE)) {
 		advance();
 		return std::shared_ptr<Stmt>(new Block(blockStatement()));
 	}
+	// generic statement which is just an expression
 	return expressionStatement();
 }
 std::shared_ptr<Stmt> Parser::printStatement() {
+	// printing the contents of the print statement
 	std::shared_ptr<Expr> expr = expression();
 	consume(TokenType::SEMICOLON, "Expected ';' at end of statement");
 	return std::shared_ptr<Stmt>(new PrintStmt(expr));
 }
 std::vector<std::shared_ptr<Stmt>> Parser::blockStatement() {
+	// new block scope
 	std::vector<std::shared_ptr<Stmt>> statements;	
 	while(!check(TokenType::RIGHT_BRACE) && !isAtEnd()) {
+		// variable declaration
 		if(check(TokenType::VAR)) {
 			advance();
 			statements.push_back(varDeclaration());
@@ -190,7 +199,7 @@ std::shared_ptr<Stmt> Parser::expressionStatement() {
 std::shared_ptr<Stmt> Parser::varDeclaration() {
 	Token name = consume(TokenType::IDENTIFIER, "Expected variable name");
 	std::shared_ptr<Expr> initializer = nullptr;
-	//check if variable is initialized 
+	// check if variable is initialized 
 	if(check(TokenType::EQUAL)) {
 		advance();
 		initializer = expression();
