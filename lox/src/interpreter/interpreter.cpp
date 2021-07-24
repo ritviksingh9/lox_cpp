@@ -9,10 +9,13 @@ namespace interpreterEnv {
 
 
 	LoxGeneric retrieveVar(const Token& tok) {
+		// this function returns value from a specific variable
 		std::shared_ptr<EnvNode> curr;
+		// searching for variable by going through parent pointer tree
 		for(curr = currentEnv; 
 		    curr != nullptr && curr -> environment.count(tok.lexeme) == 0;
 		    curr = curr->parentEnv);
+		// variable not found
 		if(curr == nullptr) {
 			successState = false;
 			staticError::reportSyntaxError(tok);
@@ -21,10 +24,13 @@ namespace interpreterEnv {
 		return curr->environment[tok.lexeme];
 	}
 	void assignVar(const Token& tok, LoxGeneric value) {
+		// this function assigns the value of a variable to a given value
 		std::shared_ptr<EnvNode> curr;
+		// searching for variable by going through parent pointer tree
 		for(curr = currentEnv; 
 		    curr != nullptr && curr -> environment.count(tok.lexeme) == 0;
 		    curr = curr->parentEnv);
+		// variable not found
 		if(curr == nullptr) {
 			successState = false;
 			staticError::reportSyntaxError(tok);
@@ -34,27 +40,17 @@ namespace interpreterEnv {
 	}
 
 	void addVar(std::shared_ptr<VarStmt> varStatement) {
-		interpreterEnv::currentEnv -> environment[varStatement -> name.lexeme] =
+		// adds a variable to the current scope
+		currentEnv -> environment[varStatement -> name.lexeme] =
 		varStatement -> declaration();
 	}
 }
 
 void Interpreter::addVar(std::shared_ptr<VarStmt> varStatement) {
-	interpreterEnv::currentEnv -> environment[varStatement -> name.lexeme] =
-	varStatement -> declaration();
+	interpreterEnv::addVar(varStatement);
 }
-
 LoxGeneric Interpreter::retrieveVar(const Token& tok) {
-	std::shared_ptr<EnvNode> curr;
-	for(curr = interpreterEnv::currentEnv; 
-	    curr != nullptr && curr -> environment.count(tok.lexeme) == 0;
-	    curr = curr->parentEnv);
-	if(curr == nullptr) {
-		successState_ = false;
-		staticError::reportSyntaxError(tok);
-		return LoxGeneric();
-	}
-	return interpreterEnv::environment[tok.lexeme];
+	return interpreterEnv::retrieveVar(tok);
 }
 Interpreter::Interpreter() : successState_(true) {
 	interpreterEnv::successState = true;

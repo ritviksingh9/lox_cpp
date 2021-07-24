@@ -2,14 +2,12 @@
 #define INTERPRETER_H
 
 #include "types/ast/stmt.hpp"
-/*
-namespace interpreterEnv {
-	extern std::map<std::string, LoxGeneric> environment;
-}*/
+
 class Interpreter {
 private:
 	bool successState_;
 
+	// aliases for functions in interpreterEnv
 	LoxGeneric retrieveVar(const Token& tok);
 	void addVar(std::shared_ptr<VarStmt> varStatement);
 public:
