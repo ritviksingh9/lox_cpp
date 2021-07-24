@@ -1,6 +1,5 @@
 #include "types/ast/expr.hpp"
 #include "interpreter/interpreterEnv.hpp"
-#include <iostream>
 
 LoxGeneric Binary::evaluate() const {
 	// only initially evaluate left one to allow for short-circuiting of logical operators
@@ -35,23 +34,22 @@ LoxGeneric Binary::evaluate() const {
 			break;
 		// comparison Operators
 		case TokenType::EQUAL_EQUAL:
-			return LoxGeneric(left == right);
+			return LoxGeneric(leftExpr == rightExpr);
 			break;
 		case TokenType::BANG_EQUAL:
-			return LoxGeneric(left != right);
+			return LoxGeneric(leftExpr != rightExpr);
 			break;
 		case TokenType::GREATER_EQUAL:
-			return LoxGeneric(left >= right);
+			return LoxGeneric(leftExpr >= rightExpr);
 			break;
 		case TokenType::LESS_EQUAL:
-			return LoxGeneric(left <= right);
+			return LoxGeneric(leftExpr <= rightExpr);
 			break;
 		case TokenType::GREATER:
-			return LoxGeneric(left > right);
+			return LoxGeneric(leftExpr > rightExpr);
 			break;
 		case TokenType::LESS:
-			std::cout << left << " " << right << std::endl;
-			return LoxGeneric(left < right);
+			return LoxGeneric(leftExpr < rightExpr);
 			break;
 	}	
 	return LoxGeneric();
