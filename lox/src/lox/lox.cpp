@@ -47,7 +47,8 @@ int main(int argc, char* argv[]) {
 //	std::string str2 = "print \"hello world\";  print 2*8;";
 //	std::string str2 = "var a=3; var b=4; var c = 9;\n {var a = 5;\n b=10; \n print a; print b; print c;} print a; print b;";
 //	std::string str2 = "var a = 2; var b = 1; \nif(a > b) {\nprint \"if\";} \nelse { print \"else\";}";
-	std::string str2 = "var i = 0; \n while(i < 5) { print i*2; i = i+1; }";
+//	std::string str2 = "var i = 0; \n while(i < 5) { print i*2; i = i+1; }"
+	std::string str2 = "for(\nvar i = 0; \ni < 5; \ni = i+1\n) { print i*2;}";
 	bool successState = true;
 	// scanning
 	// the scanning process takes in a string corresponding to source code

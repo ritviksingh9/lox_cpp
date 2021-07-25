@@ -172,9 +172,15 @@ std::shared_ptr<Stmt> Parser::statement() {
 		advance();
 		return ifStatement();
 	}
+	// while loop
 	else if(check(TokenType::WHILE)) {
 		advance();
 		return whileStatement();
+	}
+	// for loop
+	else if(check(TokenType::FOR)) {
+		advance();
+		return forStatement();
 	}
 	// generic statement which is just an expression
 	return expressionStatement();
@@ -216,11 +222,59 @@ std::shared_ptr<Stmt> Parser::ifStatement() {
 	return std::shared_ptr<Stmt>(new IfStmt(condition, thenStmt, elseStmt));
 }
 std::shared_ptr<Stmt> Parser::whileStatement() {
+	// constructing the while statement
 	consume(TokenType::LEFT_PAREN, "Expected '(' before 'while' condition.");
 	std::shared_ptr<Expr> condition = expression();
 	consume(TokenType::RIGHT_PAREN, "Expected ')' after 'while' condition.");
 	std::shared_ptr<Stmt> body = statement();
 	return std::shared_ptr<Stmt>(new WhileStmt(condition, body));
+}
+std::shared_ptr<Stmt> Parser::forStatement() {
+	// extract information for for loop
+	consume(TokenType::LEFT_PAREN, "Expected '(' before 'for' loop.");
+	// dealing with initial statement in for loop
+	// can either be empty, initialize a variable, or just be an expression statement
+	std::shared_ptr<Stmt> initialStmt = nullptr;
+	if(check(TokenType::VAR)) {
+		advance();
+		initialStmt = varDeclaration();
+	}
+	else if(!check(TokenType::SEMICOLON)) {
+		advance();
+		initialStmt = expressionStatement();
+	
+	}
+	else
+		advance();
+	// dealing with condition of for loop
+	// default value of condition is true unless otherwise specified
+	std::shared_ptr<Expr> condition = std::shared_ptr<Expr>(new Literal(true));
+	if(!check(TokenType::SEMICOLON)) 
+		condition = expression();
+	consume(TokenType::SEMICOLON, "Expected ';' at the end of condition");
+	// dealing with tail statement in for loop
+	std::shared_ptr<Stmt> tail = nullptr;
+	// when checking for expression, need to not use expressionStatement()
+	// because we are not expecting a semicolon at the end
+	if(!check(TokenType::RIGHT_PAREN)) 
+		tail = std::shared_ptr<Stmt>(new ExpressionStmt(expression()));
+	consume(TokenType::RIGHT_PAREN, "Expected ')' after 'for' loop.");
+
+	// begin desugarizing for loop into while loop
+	// first add the body of the while loop
+	std::vector<std::shared_ptr<Stmt>> body = { statement()};
+	body.push_back(tail);
+	std::shared_ptr<Stmt> whileBody = std::shared_ptr<Stmt> (new BlockStmt(body));
+	// create the while loop with the for loop condition
+	std::shared_ptr<Stmt> whileLoop = std::shared_ptr<Stmt> 
+						(new WhileStmt(condition, whileBody));
+	// if there is no initializer we are done
+	if(initialStmt == nullptr)
+		return whileLoop;
+	// create a new block scope in which the initializer and loop reside
+	std::vector<std::shared_ptr<Stmt>> outerBlockStmts = {initialStmt, whileLoop};
+	// return new block scope
+	return std::shared_ptr<Stmt> (new BlockStmt(outerBlockStmts));
 }
 std::shared_ptr<Stmt> Parser::expressionStatement() {
 	// retrieve expression
