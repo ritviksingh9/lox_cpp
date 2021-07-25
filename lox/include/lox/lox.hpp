@@ -2,9 +2,9 @@
 #define LOX_H
 
 namespace lox {
-	void runFile(char* path);
+	void runFile(const std::string& sourceFile);
 	void runPrompt();
-	void run(const std::string& source);
+	void run(const std::string& sourceCode);
 }
 
 #endif
